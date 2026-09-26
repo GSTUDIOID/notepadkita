@@ -1,0 +1,793 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>NotepadKita - Buat Jurnal</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background: #1976d2;
+
+            padding: 40px 20px;
+
+        }
+
+        .container {
+
+            width: 100%;
+
+            max-width: 800px;
+
+            margin: auto;
+
+            padding-bottom: 200px;
+
+        }
+
+        .title {
+
+            text-align: center;
+
+            color: white;
+
+            font-size: 38px;
+
+            margin-bottom: 25px;
+
+        }
+
+        .back {
+
+            display: inline-block;
+
+            background: white;
+
+            color: #1976d2;
+
+            text-decoration: none;
+
+            padding: 12px 20px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
+
+        }
+
+        .journal {
+
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.25);
+
+        }
+
+        .journal-title {
+
+            width: 100%;
+
+            padding: 12px 5px;
+
+            margin-bottom: 20px;
+
+            border: none;
+
+            border-bottom:
+                2px solid #ddd;
+
+            outline: none;
+
+            font-size: 23px;
+
+            font-weight: bold;
+
+        }
+
+        .journal-title:focus {
+
+            border-bottom-color:
+                #1976d2;
+
+        }
+
+        .journal-content {
+
+            width: 100%;
+
+            min-height: 500px;
+
+            padding: 15px;
+
+            border:
+                2px solid #ddd;
+
+            border-radius: 10px;
+
+            outline: none;
+
+            resize: vertical;
+
+            font-family:
+                Arial, sans-serif;
+
+            font-size: 17px;
+
+            line-height: 1.6;
+
+        }
+
+        .journal-content:focus {
+
+            border-color:
+                #1976d2;
+
+        }
+
+        .counter {
+
+            text-align: right;
+
+            margin-top: 8px;
+
+            color: #666;
+
+            font-size: 14px;
+
+        }
+
+        .buttons {
+
+            display: flex;
+
+            gap: 15px;
+
+            margin-top: 20px;
+
+        }
+
+        .button {
+
+            flex: 1;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            color: white;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+        .save {
+
+            background: #1976d2;
+
+        }
+
+        .save:hover {
+
+            background: #125ca8;
+
+        }
+
+        .delete {
+
+            background: #e53935;
+
+        }
+
+        .delete:hover {
+
+            background: #c62828;
+
+        }
+
+        .button:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding:
+                    25px 15px;
+
+            }
+
+            .title {
+
+                font-size: 30px;
+
+            }
+
+            .journal {
+
+                padding: 18px;
+
+            }
+
+            .buttons {
+
+                flex-direction:
+                    column;
+
+            }
+
+            .journal-content {
+
+                min-height: 400px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1 class="title">
+        📖 Buat Jurnal
+    </h1>
+
+
+    <a
+        href="index4.html"
+        class="back">
+
+        ← Kembali ke Penyimpanan
+
+    </a>
+
+
+    <div class="journal">
+
+        <input
+            type="text"
+            id="journalTitle"
+            class="journal-title"
+            placeholder="Judul jurnal...">
+
+
+        <textarea
+            id="journalContent"
+            class="journal-content"
+            maxlength="5000"
+            placeholder="Tulis jurnal kamu di sini..."></textarea>
+
+
+        <div class="counter">
+
+            <span id="charCount">
+                0
+            </span>
+
+            / 5000 karakter
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="button save"
+                id="saveButton">
+
+                💾 Simpan Jurnal
+
+            </button>
+
+
+            <button
+                class="button delete"
+                id="deleteButton">
+
+                🗑️ Buang
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const MAX_CHAR =
+    5000;
+
+
+// ==========================================
+// COOKIE
+// ==========================================
+
+function ambilCookie(nama) {
+
+    const cookies =
+        document.cookie.split(";");
+
+
+    for (
+        let cookie of cookies
+    ) {
+
+        cookie =
+            cookie.trim();
+
+
+        if (
+            cookie.startsWith(
+                nama + "="
+            )
+        ) {
+
+            return decodeURIComponent(
+                cookie.substring(
+                    nama.length + 1
+                )
+            );
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+function simpanCookie(
+    nama,
+    nilai
+) {
+
+    document.cookie =
+        nama +
+        "=" +
+        encodeURIComponent(
+            nilai
+        ) +
+        "; max-age=315360000; path=/; SameSite=Lax";
+
+}
+
+
+// ==========================================
+// SIAPKAN USER
+// ==========================================
+
+async function siapkanPengguna() {
+
+    let userToken =
+        ambilCookie(
+            "notepadkita_user"
+        );
+
+
+    if (userToken) {
+
+        return userToken;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/users",
+                {
+                    method: "POST"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                "Gagal membuat pengguna."
+            );
+
+        }
+
+
+        userToken =
+            data.userToken;
+
+
+        simpanCookie(
+            "notepadkita_user",
+            userToken
+        );
+
+
+        return userToken;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        alert(
+            "Gagal menyiapkan akun pengguna."
+        );
+
+
+        return null;
+
+    }
+
+}
+
+
+// ==========================================
+// COUNTER
+// ==========================================
+
+const journalContent =
+    document.getElementById(
+        "journalContent"
+    );
+
+
+const charCount =
+    document.getElementById(
+        "charCount"
+    );
+
+
+journalContent.addEventListener(
+    "input",
+    function() {
+
+        charCount.textContent =
+            journalContent.value.length;
+
+    }
+);
+
+
+// ==========================================
+// HEARTBEAT
+// ==========================================
+
+async function heartbeat() {
+
+    const userToken =
+        ambilCookie(
+            "notepadkita_user"
+        );
+
+
+    if (!userToken) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await fetch(
+            `/api/users/${encodeURIComponent(
+                userToken
+            )}/heartbeat`,
+            {
+                method: "POST"
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Heartbeat gagal:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// SIMPAN JURNAL
+// ==========================================
+
+document.getElementById(
+    "saveButton"
+).addEventListener(
+    "click",
+    async function() {
+
+        const title =
+            document.getElementById(
+                "journalTitle"
+            ).value.trim();
+
+
+        const content =
+            journalContent.value.trim();
+
+
+        if (content === "") {
+
+            alert(
+                "Jurnal masih kosong."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            content.length >
+            MAX_CHAR
+        ) {
+
+            alert(
+                "Jurnal maksimal 5000 karakter."
+            );
+
+            return;
+
+        }
+
+
+        const saveButton =
+            document.getElementById(
+                "saveButton"
+            );
+
+
+        saveButton.disabled =
+            true;
+
+
+        saveButton.textContent =
+            "Menyimpan...";
+
+
+        try {
+
+            const userToken =
+                await siapkanPengguna();
+
+
+            if (!userToken) {
+
+                return;
+
+            }
+
+
+            /*
+             * Untuk sementara jurnal
+             * menggunakan tabel notes.
+             *
+             * Server perlu membedakan
+             * jurnal dan catatan biasa.
+             */
+
+            const response =
+                await fetch(
+                    "/api/journals",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            userToken:
+                                userToken,
+
+                            title:
+                                title ||
+                                "Jurnal Tanpa Judul",
+
+                            content:
+                                content
+
+                        })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "Jurnal gagal disimpan."
+                );
+
+            }
+
+
+            alert(
+                "Jurnal berhasil disimpan!"
+            );
+
+
+            window.location.href =
+                "index4.html";
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            alert(
+                error.message ||
+                "Tidak dapat terhubung ke server."
+            );
+
+
+        } finally {
+
+            saveButton.disabled =
+                false;
+
+
+            saveButton.textContent =
+                "💾 Simpan Jurnal";
+
+        }
+
+    }
+);
+
+
+// ==========================================
+// BUANG
+// ==========================================
+
+document.getElementById(
+    "deleteButton"
+).addEventListener(
+    "click",
+    function() {
+
+        if (
+            journalContent.value === "" &&
+            document.getElementById(
+                "journalTitle"
+            ).value === ""
+        ) {
+
+            alert(
+                "Tidak ada jurnal untuk dibuang."
+            );
+
+            return;
+
+        }
+
+
+        const yakin =
+            confirm(
+                "Apakah kamu yakin ingin membuang jurnal ini?"
+            );
+
+
+        if (!yakin) {
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "journalTitle"
+        ).value = "";
+
+
+        journalContent.value = "";
+
+
+        charCount.textContent =
+            "0";
+
+
+        alert(
+            "Jurnal telah dibuang."
+        );
+
+    }
+);
+
+
+// ==========================================
+// MULAI
+// ==========================================
+
+async function mulai() {
+
+    await siapkanPengguna();
+
+    await heartbeat();
+
+
+    setInterval(
+        heartbeat,
+        20000
+    );
+
+}
+
+
+mulai();
+
+</script>
+
+</body>
+
+</html>

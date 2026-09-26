@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Password Panel - NotepadKita</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background: #1976d2;
+
+            font-family: Arial, sans-serif;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
+        }
+
+
+        .login-box {
+
+            width: 100%;
+
+            max-width: 400px;
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.25);
+
+            text-align: center;
+
+        }
+
+
+        .icon {
+
+            font-size: 55px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        h1 {
+
+            color: #1976d2;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: 2px solid #ddd;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            outline: none;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        input:focus {
+
+            border-color: #1976d2;
+
+        }
+
+
+        button {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #1976d2;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        button:hover {
+
+            background: #125ca8;
+
+        }
+
+
+        #message {
+
+            margin-top: 15px;
+
+            min-height: 20px;
+
+            font-size: 14px;
+
+        }
+
+
+        .back {
+
+            display: block;
+
+            margin-top: 20px;
+
+            color: #1976d2;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-box">
+
+
+    <div class="icon">
+        🔐
+    </div>
+
+
+    <h1>
+        Password Panel
+    </h1>
+
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Masukkan password"
+        autocomplete="off"
+    >
+
+
+    <button onclick="login()">
+        Login
+    </button>
+
+
+    <div id="message"></div>
+
+
+    <a
+        href="index2.html"
+        class="back"
+    >
+        ← Kembali
+    </a>
+
+
+</div>
+
+
+<script>
+
+
+// ======================================
+// PASSWORD ADMIN
+// ======================================
+
+const PASSWORD_PANEL =
+    "kenapakutaruhdisini";
+
+
+// ======================================
+// LOGIN
+// ======================================
+
+function login() {
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    if (
+        password === PASSWORD_PANEL
+    ) {
+
+        message.style.color =
+            "#2e7d32";
+
+        message.textContent =
+            "Login berhasil!";
+
+
+        // Tunggu sebentar
+        // lalu masuk ke Admin Panel
+
+        setTimeout(function() {
+
+            window.location.href =
+                "index7.html";
+
+        }, 500);
+
+
+    } else {
+
+        message.style.color =
+            "#d32f2f";
+
+        message.textContent =
+            "Password salah.";
+
+    }
+
+}
+
+
+// ======================================
+// ENTER
+// ======================================
+
+document
+    .getElementById("password")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                login();
+
+            }
+
+        }
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

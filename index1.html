@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NotepadKita - Home</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #1976d2;
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 700px;
+            padding: 40px 25px;
+        }
+
+        .title {
+            font-size: 55px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            color: #e3f2fd;
+        }
+
+        .next-button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: white;
+            color: #1976d2;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .next-button:hover {
+            background: #e3f2fd;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 600px) {
+            .title {
+                font-size: 40px;
+            }
+
+            .description {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1 class="title">NotepadKita</h1>
+
+        <p class="description">
+            Selamat datang di NotepadKita.
+            Tempat sederhana untuk membuat dan mengelola catatanmu.
+        </p>
+
+        <a href="index2.html" class="next-button">
+            Mulai
+        </a>
+
+    </div>
+
+</body>
+</html>
+

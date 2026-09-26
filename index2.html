@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>NotepadKita - Menu</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background: #1976d2;
+
+            padding: 40px 20px;
+
+            overflow-y: auto;
+
+        }
+
+        .container {
+
+            width: 100%;
+
+            max-width: 700px;
+
+            margin: auto;
+
+            padding-bottom: 200px;
+
+        }
+
+        .title {
+
+            text-align: center;
+
+            color: white;
+
+            font-size: 42px;
+
+            margin-bottom: 10px;
+
+        }
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #e3f2fd;
+
+            font-size: 17px;
+
+            margin-bottom: 35px;
+
+        }
+
+        .menu {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 18px;
+
+        }
+
+        .menu-button {
+
+            display: block;
+
+            width: 100%;
+
+            padding: 22px;
+
+            background: white;
+
+            color: #1976d2;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            border-radius: 15px;
+
+            font-size: 21px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 6px 15px
+                rgba(0, 0, 0, 0.2);
+
+            transition:
+                transform 0.15s,
+                background 0.15s;
+
+        }
+
+        .menu-button:hover {
+
+            background: #e3f2fd;
+
+            transform: translateY(-3px);
+
+        }
+
+        .menu-button:active {
+
+            transform: translateY(0);
+
+        }
+
+        .icon {
+
+            display: block;
+
+            font-size: 35px;
+
+            margin-bottom: 8px;
+
+        }
+
+        .description {
+
+            display: block;
+
+            color: #777;
+
+            font-size: 14px;
+
+            font-weight: normal;
+
+            margin-top: 6px;
+
+        }
+
+        .home-button {
+
+            display: block;
+
+            width: 100%;
+
+            margin-top: 35px;
+
+            padding: 14px;
+
+            background: transparent;
+
+            border: 2px solid white;
+
+            color: white;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            border-radius: 10px;
+
+            font-weight: bold;
+
+        }
+
+        .home-button:hover {
+
+            background: white;
+
+            color: #1976d2;
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 30px 15px;
+            }
+
+            .title {
+                font-size: 34px;
+            }
+
+            .menu-button {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <h1 class="title">
+        📝 NotepadKita
+    </h1>
+
+
+    <p class="subtitle">
+        Pilih menu yang ingin kamu gunakan
+    </p>
+
+
+    <div class="menu">
+
+
+        <!-- INDEX 3 -->
+
+        <a
+            href="index3.html"
+            class="menu-button"
+        >
+
+            <span class="icon">
+                📝
+            </span>
+
+            Buat Catatan
+
+            <span class="description">
+                Tulis dan simpan catatan baru
+            </span>
+
+        </a>
+
+
+        <!-- INDEX 8 -->
+
+        <a
+            href="index8.html"
+            class="menu-button"
+        >
+
+            <span class="icon">
+                📖
+            </span>
+
+            Buat Jurnal
+
+            <span class="description">
+                Tulis jurnal hingga 5000 karakter
+            </span>
+
+        </a>
+
+
+        <!-- INDEX 4 -->
+
+        <a
+            href="index4.html"
+            class="menu-button"
+        >
+
+            <span class="icon">
+                💾
+            </span>
+
+            Penyimpanan
+
+            <span class="description">
+                Lihat, edit, dan hapus catatan
+            </span>
+
+        </a>
+
+
+        <!-- INDEX 5 -->
+
+        <a
+            href="index5.html"
+            class="menu-button"
+        >
+
+            <span class="icon">
+                👨‍💻
+            </span>
+
+            Credit
+
+            <span class="description">
+                Tentang pembuat dan NotepadKita
+            </span>
+
+        </a>
+
+
+        <!-- INDEX 6 -->
+
+        <a
+            href="index6.html"
+            class="menu-button"
+        >
+
+            <span class="icon">
+                🔐
+            </span>
+
+            Password Panel
+
+            <span class="description">
+                Panel password NotepadKita
+            </span>
+
+        </a>
+
+
+    </div>
+
+
+    <a
+        href="index1.html"
+        class="home-button"
+    >
+        ← Kembali ke Home
+    </a>
+
+
+</div>
+
+
+</body>
+
+</html>

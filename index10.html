@@ -1,0 +1,998 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>NotepadKita - Penyimpanan Khusus Admin</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background: #1976d2;
+
+            padding: 30px 15px;
+
+        }
+
+        .container {
+
+            width: 100%;
+
+            max-width: 850px;
+
+            margin: auto;
+
+            padding-bottom: 150px;
+
+        }
+
+        h1 {
+
+            color: white;
+
+            text-align: center;
+
+            margin-bottom: 10px;
+
+        }
+
+        .subtitle {
+
+            color: #e3f2fd;
+
+            text-align: center;
+
+            margin-bottom: 25px;
+
+        }
+
+        .back {
+
+            display: inline-block;
+
+            background: white;
+
+            color: #1976d2;
+
+            padding: 12px 18px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
+
+        }
+
+        .notes {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+        }
+
+        .note {
+
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.2);
+
+        }
+
+        .note h2 {
+
+            color: #1976d2;
+
+            margin-bottom: 15px;
+
+            word-break: break-word;
+
+        }
+
+        .content {
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+            line-height: 1.7;
+
+            color: #333;
+
+            max-height: 600px;
+
+            overflow-y: auto;
+
+            padding: 12px;
+
+            background: #f5f5f5;
+
+            border-radius: 8px;
+
+        }
+
+        .date {
+
+            color: #777;
+
+            font-size: 13px;
+
+            margin-top: 15px;
+
+        }
+
+        .buttons {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 15px;
+
+        }
+
+        button {
+
+            border: none;
+
+            padding: 11px 18px;
+
+            border-radius: 8px;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+        .edit {
+
+            background: #1976d2;
+
+        }
+
+        .delete {
+
+            background: #e53935;
+
+        }
+
+        .empty,
+        .loading,
+        .error {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 15px;
+
+            text-align: center;
+
+        }
+
+        .error {
+
+            color: #d32f2f;
+
+        }
+
+        #editor {
+
+            display: none;
+
+            background: white;
+
+            margin-top: 25px;
+
+            padding: 20px;
+
+            border-radius: 15px;
+
+        }
+
+        #editor input,
+        #editor textarea {
+
+            width: 100%;
+
+            padding: 12px;
+
+            margin-bottom: 12px;
+
+            border:
+                2px solid #ddd;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+        }
+
+        #editor textarea {
+
+            min-height: 450px;
+
+            resize: vertical;
+
+            line-height: 1.6;
+
+        }
+
+        .counter {
+
+            text-align: right;
+
+            color: #666;
+
+            font-size: 13px;
+
+            margin-bottom: 10px;
+
+        }
+
+        .save {
+
+            background: #1976d2;
+
+        }
+
+        .cancel {
+
+            background: #777;
+
+        }
+
+        @media (max-width: 600px) {
+
+            .buttons {
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <h1>
+        📚 Penyimpanan Khusus Admin
+    </h1>
+
+
+    <p class="subtitle">
+        Jurnal khusus admin
+    </p>
+
+
+    <a
+        href="index7.html"
+        class="back"
+    >
+        ← Kembali ke Admin Panel
+    </a>
+
+
+    <div
+        id="notes"
+        class="notes"
+    >
+
+        <div class="loading">
+            Memuat jurnal...
+        </div>
+
+    </div>
+
+
+    <!-- EDITOR -->
+
+    <div id="editor">
+
+        <h2>
+            ✏️ Edit Jurnal
+        </h2>
+
+
+        <input
+            type="text"
+            id="editTitle"
+            placeholder="Judul jurnal..."
+        >
+
+
+        <textarea
+            id="editContent"
+            placeholder="Isi jurnal..."
+        ></textarea>
+
+
+        <div class="counter">
+
+            <span id="counter">
+                0
+            </span>
+
+            karakter
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="save"
+                onclick="simpanEdit()"
+            >
+                💾 Simpan
+            </button>
+
+
+            <button
+                class="cancel"
+                onclick="tutupEditor()"
+            >
+                Batal
+            </button>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+let editId = null;
+
+
+// ==========================================
+// COOKIE USER
+// ==========================================
+
+function getCookie(name) {
+
+    const cookies =
+        document.cookie.split(";");
+
+
+    for (
+        let cookie of cookies
+    ) {
+
+        cookie =
+            cookie.trim();
+
+
+        if (
+            cookie.startsWith(
+                name + "="
+            )
+        ) {
+
+            return decodeURIComponent(
+                cookie.substring(
+                    name.length + 1
+                )
+            );
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ==========================================
+// USER TOKEN
+// ==========================================
+
+async function siapkanUser() {
+
+    let token =
+        getCookie(
+            "notepadkita_user"
+        );
+
+
+    if (token) {
+
+        return token;
+
+    }
+
+
+    const response =
+        await fetch(
+            "/api/users",
+            {
+                method: "POST"
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !data.success
+    ) {
+
+        throw new Error(
+            "Gagal menyiapkan pengguna."
+        );
+
+    }
+
+
+    token =
+        data.userToken;
+
+
+    document.cookie =
+        "notepadkita_user=" +
+        encodeURIComponent(token) +
+        "; max-age=315360000; path=/; SameSite=Lax";
+
+
+    return token;
+
+}
+
+
+// ==========================================
+// LOAD JURNAL
+// ==========================================
+
+async function tampilkanJurnal() {
+
+    const box =
+        document.getElementById(
+            "notes"
+        );
+
+
+    try {
+
+        const token =
+            await siapkanUser();
+
+
+        const response =
+            await fetch(
+                "/api/admin-journals/" +
+                encodeURIComponent(token)
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Gagal memuat jurnal."
+            );
+
+        }
+
+
+        if (
+            !data.notes ||
+            data.notes.length === 0
+        ) {
+
+            box.innerHTML = `
+
+                <div class="empty">
+
+                    <h2>
+                        Belum ada jurnal
+                    </h2>
+
+                    <p>
+                        Jurnal yang dibuat
+                        dari halaman Jurnal Khusus Admin
+                        akan muncul di sini.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        box.innerHTML = "";
+
+
+        data.notes.forEach(
+            note => {
+
+                const element =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                element.className =
+                    "note";
+
+
+                element.innerHTML = `
+
+                    <h2>
+                        ${aman(note.title)}
+                    </h2>
+
+                    <div class="content">
+                        ${aman(note.content)}
+                    </div>
+
+                    <div class="date">
+                        Diperbarui:
+                        ${aman(note.updated_at)}
+                    </div>
+
+                    <div class="buttons">
+
+                        <button
+                            class="edit"
+                            onclick="bukaEdit(${note.id})"
+                        >
+                            ✏️ Edit
+                        </button>
+
+
+                        <button
+                            class="delete"
+                            onclick="hapus(${note.id})"
+                        >
+                            🗑️ Hapus
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                box.appendChild(
+                    element
+                );
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        box.innerHTML = `
+
+            <div class="error">
+
+                <h2>
+                    Gagal memuat jurnal
+                </h2>
+
+                <p>
+                    ${aman(error.message)}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================
+// EDIT
+// ==========================================
+
+async function bukaEdit(id) {
+
+    try {
+
+        const token =
+            await siapkanUser();
+
+
+        const response =
+            await fetch(
+                "/api/admin-journals/" +
+                encodeURIComponent(token)
+            );
+
+
+        const data =
+            await response.json();
+
+
+        const note =
+            data.notes.find(
+                n => n.id === id
+            );
+
+
+        if (!note) {
+
+            alert(
+                "Jurnal tidak ditemukan."
+            );
+
+            return;
+
+        }
+
+
+        editId = id;
+
+
+        document.getElementById(
+            "editTitle"
+        ).value =
+            note.title;
+
+
+        document.getElementById(
+            "editContent"
+        ).value =
+            note.content;
+
+
+        updateCounter();
+
+
+        document.getElementById(
+            "editor"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "editor"
+        ).scrollIntoView({
+            behavior: "smooth"
+        });
+
+    } catch (error) {
+
+        alert(
+            "Gagal membuka jurnal."
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// COUNTER
+// ==========================================
+
+document.getElementById(
+    "editContent"
+).addEventListener(
+    "input",
+    updateCounter
+);
+
+
+function updateCounter() {
+
+    document.getElementById(
+        "counter"
+    ).textContent =
+        document.getElementById(
+            "editContent"
+        ).value.length;
+
+}
+
+
+// ==========================================
+// SIMPAN EDIT
+// ==========================================
+
+async function simpanEdit() {
+
+    if (!editId) {
+
+        return;
+
+    }
+
+
+    const title =
+        document.getElementById(
+            "editTitle"
+        ).value.trim();
+
+
+    const content =
+        document.getElementById(
+            "editContent"
+        ).value;
+
+
+    if (
+        !content.trim()
+    ) {
+
+        alert(
+            "Isi jurnal tidak boleh kosong."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const token =
+            await siapkanUser();
+
+
+        const response =
+            await fetch(
+                "/api/admin-journals/" +
+                editId,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            userToken:
+                                token,
+
+                            title:
+                                title ||
+                                "Tanpa Judul",
+
+                            content:
+                                content
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Gagal menyimpan."
+            );
+
+        }
+
+
+        alert(
+            "Jurnal berhasil diperbarui."
+        );
+
+
+        tutupEditor();
+
+
+        tampilkanJurnal();
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// TUTUP EDITOR
+// ==========================================
+
+function tutupEditor() {
+
+    document.getElementById(
+        "editor"
+    ).style.display =
+        "none";
+
+
+    editId = null;
+
+}
+
+
+// ==========================================
+// HAPUS
+// ==========================================
+
+async function hapus(id) {
+
+    if (
+        !confirm(
+            "Hapus jurnal ini?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const token =
+            await siapkanUser();
+
+
+        const response =
+            await fetch(
+                "/api/admin-journals/" +
+                id,
+                {
+
+                    method: "DELETE",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            userToken:
+                                token
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Gagal menghapus jurnal."
+            );
+
+        }
+
+
+        alert(
+            "Jurnal berhasil dihapus."
+        );
+
+
+        tampilkanJurnal();
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// AMANKAN HTML
+// ==========================================
+
+function aman(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text ?? "";
+
+
+    return div.innerHTML;
+
+}
+
+
+// ==========================================
+// MULAI
+// ==========================================
+
+tampilkanJurnal();
+
+</script>
+
+
+</body>
+
+</html>
