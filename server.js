@@ -12,7 +12,8 @@ const adminSessions = new Set();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const db = new sqlite3.Database("./notepadkita.db");
+const dbPath = process.env.DB_PATH || path.join(__dirname, "notepadkita.db");
+const db = new sqlite3.Database(dbPath);
 
 // ===============================
 // DATABASE HELPERS
