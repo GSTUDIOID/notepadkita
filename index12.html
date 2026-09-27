@@ -241,51 +241,61 @@
 
     async function loadAccount() {
 
-        const userToken = getCookie(COOKIE_NAME);
-
-        if (!userToken) {
-
-            document.getElementById("loading").style.display = "none";
-
-            document.getElementById("error").textContent =
-                "Akun tidak ditemukan. Silakan masuk kembali.";
-
-            document.getElementById("error").style.display = "block";
-
-            return;
-        }
+        let userToken = getCookie(COOKIE_NAME);
 
         try {
 
+            if (userToken) {
+
+                const response = await fetch(
+                    `/api/users/${encodeURIComponent(userToken)}`
+                );
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.user) {
+                    tampilkanAkun(data.user);
+                    return;
+                }
+
+                console.warn("Token lama tidak valid. Membuat akun baru.");
+            }
+
+            const createResponse = await fetch(
+                "/api/users",
+                {
+                    method: "POST"
+                }
+            );
+
+            const createData = await createResponse.json();
+
+            if (
+                !createResponse.ok ||
+                !createData.success ||
+                !createData.userToken
+            ) {
+                throw new Error("Gagal membuat akun baru.");
+            }
+
+            userToken = createData.userToken;
+
+            document.cookie =
+                COOKIE_NAME + "=" +
+                encodeURIComponent(userToken) +
+                "; max-age=315360000; path=/; SameSite=Lax";
+
             const response = await fetch(
-                `/api/users/${userToken}`
+                `/api/users/${encodeURIComponent(userToken)}`
             );
 
             const data = await response.json();
 
             if (!response.ok || !data.success || !data.user) {
-                throw new Error("User tidak ditemukan");
+                throw new Error("Gagal memuat akun baru.");
             }
 
-            const user = data.user;
-
-            document.getElementById("userNumber").textContent =
-                "#" + user.id;
-
-            document.getElementById("createdAt").textContent =
-                formatTanggal(user.created_at);
-
-            document.getElementById("userToken").textContent =
-                user.user_token;
-
-            document.getElementById("origin").textContent =
-                "NotepadKita";
-
-            document.getElementById("loading").style.display =
-                "none";
-
-            document.getElementById("accountInfo").style.display =
-                "block";
+            tampilkanAkun(data.user);
 
         } catch (error) {
 
@@ -294,9 +304,33 @@
             document.getElementById("loading").style.display =
                 "none";
 
+            document.getElementById("error").textContent =
+                "Gagal memuat informasi akun.";
+
             document.getElementById("error").style.display =
                 "block";
         }
+    }
+
+    function tampilkanAkun(user) {
+
+        document.getElementById("userNumber").textContent =
+            "#" + user.id;
+
+        document.getElementById("createdAt").textContent =
+            formatTanggal(user.created_at);
+
+        document.getElementById("userToken").textContent =
+            user.user_token;
+
+        document.getElementById("origin").textContent =
+            "NotepadKita";
+
+        document.getElementById("loading").style.display =
+            "none";
+
+        document.getElementById("accountInfo").style.display =
+            "block";
     }
 
     loadAccount();
