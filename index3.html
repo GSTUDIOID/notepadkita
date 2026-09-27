@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,7 @@
     <title>NotepadKita - Buat Catatan</title>
 
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -54,19 +55,16 @@
             background: white;
             border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 25px rgba(0,0,0,.25);
         }
 
         .note-title {
             width: 100%;
             padding: 12px 5px;
             margin-bottom: 20px;
-
             border: none;
             border-bottom: 2px solid #ddd;
-
             outline: none;
-
             font-size: 23px;
             font-weight: bold;
         }
@@ -78,15 +76,11 @@
         .note-content {
             width: 100%;
             min-height: 500px;
-
             padding: 15px;
-
             border: 2px solid #ddd;
             border-radius: 10px;
-
             outline: none;
             resize: vertical;
-
             font-family: Arial, sans-serif;
             font-size: 17px;
             line-height: 1.6;
@@ -112,14 +106,11 @@
         .button {
             flex: 1;
             padding: 15px;
-
             border: none;
             border-radius: 9px;
-
             color: white;
             font-size: 17px;
             font-weight: bold;
-
             cursor: pointer;
         }
 
@@ -140,7 +131,7 @@
         }
 
         .button:disabled {
-            opacity: 0.6;
+            opacity: .6;
             cursor: not-allowed;
         }
 
@@ -165,9 +156,13 @@
             .note-content {
                 min-height: 400px;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
@@ -177,11 +172,14 @@
             📝 Buat Catatan
         </h1>
 
+
         <a
             href="index2.html"
-            class="back-button">
+            class="back-button"
+        >
             ← Kembali
         </a>
+
 
         <div class="notepad">
 
@@ -192,6 +190,7 @@
                 placeholder="Judul catatan..."
             >
 
+
             <textarea
                 id="noteContent"
                 class="note-content"
@@ -199,26 +198,28 @@
                 placeholder="Tulis sesuatu di sini..."
             ></textarea>
 
+
             <div class="counter">
-                <span id="charCount">0</span> / 1000 karakter
+                <span id="charCount">0</span>
+                / 1000 karakter
             </div>
+
 
             <div class="buttons">
 
                 <button
                     class="button save"
-                    id="saveButton">
-
+                    id="saveButton"
+                >
                     💾 Simpan
-
                 </button>
+
 
                 <button
                     class="button delete"
-                    id="deleteButton">
-
+                    id="deleteButton"
+                >
                     🗑️ Buang
-
                 </button>
 
             </div>
@@ -231,7 +232,7 @@
     <script>
 
         // ==========================================
-        // COOKIE USER
+        // COOKIE
         // ==========================================
 
         function ambilCookie(nama) {
@@ -239,11 +240,11 @@
             const cookies =
                 document.cookie.split(";");
 
-
-            for (let cookie of cookies) {
+            for (
+                let cookie of cookies
+            ) {
 
                 cookie = cookie.trim();
-
 
                 if (
                     cookie.startsWith(
@@ -260,7 +261,6 @@
                 }
 
             }
-
 
             return null;
 
@@ -282,17 +282,16 @@
 
 
         // ==========================================
-        // MEMASTIKAN USER ADA
+        // USER
         // ==========================================
 
         async function siapkanPengguna() {
 
             let userToken =
-                ambilCookie("notepadkita_user");
+                ambilCookie(
+                    "notepadkita_user"
+                );
 
-
-            // Kalau sudah punya token,
-            // kita gunakan kembali.
 
             if (userToken) {
 
@@ -300,9 +299,6 @@
 
             }
 
-
-            // Kalau belum ada,
-            // buat pengguna baru.
 
             try {
 
@@ -315,17 +311,27 @@
                     );
 
 
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Gagal membuat pengguna."
+                    );
+
+                }
+
+
                 const data =
                     await response.json();
 
 
                 if (
-                    !response.ok ||
-                    !data.success
+                    !data.success ||
+                    !data.userToken
                 ) {
 
                     throw new Error(
-                        "Gagal membuat pengguna."
+                        data.message ||
+                        "User tidak valid."
                     );
 
                 }
@@ -346,10 +352,9 @@
 
             } catch (error) {
 
-                console.error(error);
-
-                alert(
-                    "Gagal menyiapkan akun pengguna."
+                console.error(
+                    "Gagal menyiapkan pengguna:",
+                    error
                 );
 
                 return null;
@@ -360,7 +365,7 @@
 
 
         // ==========================================
-        // COUNTER
+        // ELEMENT
         // ==========================================
 
         const noteContent =
@@ -375,9 +380,31 @@
             );
 
 
+        const saveButton =
+            document.getElementById(
+                "saveButton"
+            );
+
+
+        const deleteButton =
+            document.getElementById(
+                "deleteButton"
+            );
+
+
+        const noteTitle =
+            document.getElementById(
+                "noteTitle"
+            );
+
+
+        // ==========================================
+        // COUNTER
+        // ==========================================
+
         noteContent.addEventListener(
             "input",
-            function() {
+            function () {
 
                 charCount.textContent =
                     noteContent.value.length;
@@ -390,17 +417,9 @@
         // SIMPAN CATATAN
         // ==========================================
 
-        document.getElementById(
-            "saveButton"
-        ).addEventListener(
+        saveButton.addEventListener(
             "click",
-            async function() {
-
-                const noteTitle =
-                    document.getElementById(
-                        "noteTitle"
-                    );
-
+            async function () {
 
                 const title =
                     noteTitle.value.trim();
@@ -421,7 +440,9 @@
                 }
 
 
-                if (content.length > 1000) {
+                if (
+                    content.length > 1000
+                ) {
 
                     alert(
                         "Catatan maksimal 1000 karakter."
@@ -432,13 +453,9 @@
                 }
 
 
-                const saveButton =
-                    document.getElementById(
-                        "saveButton"
-                    );
+                saveButton.disabled =
+                    true;
 
-
-                saveButton.disabled = true;
 
                 saveButton.textContent =
                     "Menyimpan...";
@@ -452,13 +469,9 @@
 
                     if (!userToken) {
 
-                        saveButton.disabled =
-                            false;
-
-                        saveButton.textContent =
-                            "💾 Simpan";
-
-                        return;
+                        throw new Error(
+                            "Tidak dapat menyiapkan pengguna. Pastikan server berjalan."
+                        );
 
                     }
 
@@ -467,7 +480,6 @@
                         await fetch(
                             "/api/notes",
                             {
-
                                 method: "POST",
 
                                 headers: {
@@ -475,19 +487,26 @@
                                         "application/json"
                                 },
 
-                                body: JSON.stringify({
+                                body:
+                                    JSON.stringify({
 
-                                    userToken:
-                                        userToken,
+                                        userToken:
+                                            userToken,
 
-                                    title:
-                                        title ||
-                                        "Tanpa Judul",
+                                        title:
+                                            title ||
+                                            "Tanpa Judul",
 
-                                    content:
-                                        content
+                                        content:
+                                            content,
 
-                                })
+                                        // ==================================
+                                        // INI CATATAN
+                                        // ==================================
+                                        type:
+                                            "catatan"
+
+                                    })
 
                             }
                         );
@@ -497,17 +516,21 @@
                         await response.json();
 
 
+                    console.log(
+                        "Response /api/notes:",
+                        data
+                    );
+
+
                     if (
                         !response.ok ||
                         !data.success
                     ) {
 
-                        alert(
+                        throw new Error(
                             data.message ||
                             "Catatan gagal disimpan."
                         );
-
-                        return;
 
                     }
 
@@ -523,16 +546,23 @@
 
                 } catch (error) {
 
-                    console.error(error);
+                    console.error(
+                        "Gagal menyimpan catatan:",
+                        error
+                    );
+
 
                     alert(
+                        error.message ||
                         "Tidak dapat terhubung ke server."
                     );
+
 
                 } finally {
 
                     saveButton.disabled =
                         false;
+
 
                     saveButton.textContent =
                         "💾 Simpan";
@@ -544,20 +574,12 @@
 
 
         // ==========================================
-        // BUANG
+        // BUANG CATATAN
         // ==========================================
 
-        document.getElementById(
-            "deleteButton"
-        ).addEventListener(
+        deleteButton.addEventListener(
             "click",
-            function() {
-
-                const noteTitle =
-                    document.getElementById(
-                        "noteTitle"
-                    );
-
+            function () {
 
                 if (
                     noteTitle.value === "" &&
@@ -584,11 +606,16 @@
                 }
 
 
-                noteTitle.value = "";
+                noteTitle.value =
+                    "";
 
-                noteContent.value = "";
 
-                charCount.textContent = "0";
+                noteContent.value =
+                    "";
+
+
+                charCount.textContent =
+                    "0";
 
 
                 alert(
@@ -600,12 +627,13 @@
 
 
         // ==========================================
-        // SIAPKAN USER SAAT HALAMAN DIBUKA
+        // SIAPKAN USER
         // ==========================================
 
         siapkanPengguna();
 
     </script>
-	// ========================================== // COOKIE USER // ========================================== function ambilCookie(nama) { const cookies = document.cookie.split(";"); for (let cookie of cookies) { cookie = cookie.trim(); if ( cookie.startsWith( nama + "=" ) ) { return decodeURIComponent( cookie.substring( nama.length + 1 ) ); } } return null; } function simpanCookie( nama, nilai ) { document.cookie = nama + "=" + encodeURIComponent(nilai) + "; max-age=315360000; path=/; SameSite=Lax"; } // ========================================== // MEMASTIKAN USER ADA // ========================================== async function siapkanPengguna() { let userToken = ambilCookie( "notepadkita_user" ); // Kalau sudah punya token, // gunakan token tersebut. if (userToken) { return userToken; } // Kalau belum ada, // buat user baru. try { const response = await fetch( "/api/users", { method: "POST" } ); const data = await response.json(); if ( !response.ok || !data.success ) { throw new Error( "Gagal membuat pengguna." ); } userToken = data.userToken; simpanCookie( "notepadkita_user", userToken ); return userToken; } catch (error) { console.error(error); alert( "Gagal menyiapkan akun pengguna." ); return null; } } // ========================================== // HEARTBEAT // ========================================== let heartbeatInterval = null; async function heartbeat() { const userToken = ambilCookie( "notepadkita_user" ); if (!userToken) { return; } try { const response = await fetch( `/api/users/${encodeURIComponent( userToken )}/heartbeat`, { method: "POST" } ); if (!response.ok) { console.log( "Heartbeat gagal." ); } } catch (error) { console.error( "Heartbeat gagal:", error ); } } async function mulaiHeartbeat() { const userToken = await siapkanPengguna(); if (!userToken) { return; } // Kirim heartbeat pertama await heartbeat(); // Jangan membuat interval // lebih dari satu kali. if (heartbeatInterval) { clearInterval( heartbeatInterval ); } // Kirim heartbeat setiap 20 detik heartbeatInterval = setInterval( heartbeat, 20000 ); } // ========================================== // COUNTER // ========================================== const noteContent = document.getElementById( "noteContent" ); const charCount = document.getElementById( "charCount" ); noteContent.addEventListener( "input", function() { charCount.textContent = noteContent.value.length; } ); // ========================================== // SIMPAN CATATAN // ========================================== document.getElementById( "saveButton" ).addEventListener( "click", async function() { const noteTitle = document.getElementById( "noteTitle" ); const title = noteTitle.value.trim(); const content = noteContent.value.trim(); if (content === "") { alert( "Catatan masih kosong." ); return; } if (content.length > 1000) { alert( "Catatan maksimal 1000 karakter." ); return; } const saveButton = document.getElementById( "saveButton" ); saveButton.disabled = true; saveButton.textContent = "Menyimpan..."; try { const userToken = await siapkanPengguna(); if (!userToken) { return; } const response = await fetch( "/api/notes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userToken: userToken, title: title || "Tanpa Judul", content: content }) } ); const data = await response.json(); if ( !response.ok || !data.success ) { alert( data.message || "Catatan gagal disimpan." ); return; } alert( "Catatan berhasil disimpan!" ); window.location.href = "index4.html"; } catch (error) { console.error(error); alert( "Tidak dapat terhubung ke server." ); } finally { saveButton.disabled = false; saveButton.textContent = "💾 Simpan"; } } ); // ========================================== // BUANG // ========================================== document.getElementById( "deleteButton" ).addEventListener( "click", function() { const noteTitle = document.getElementById( "noteTitle" ); if ( noteTitle.value === "" && noteContent.value === "" ) { alert( "Tidak ada catatan untuk dibuang." ); return; } const yakin = confirm( "Apakah kamu yakin ingin membuang catatan ini?" ); if (!yakin) { return; } noteTitle.value = ""; noteContent.value = ""; charCount.textContent = "0"; alert( "Catatan telah dibuang." ); } ); // ========================================== // MULAI USER + HEARTBEAT // ========================================== mulaiHeartbeat(); 
+
 </body>
+
 </html>

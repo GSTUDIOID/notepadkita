@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +8,28 @@
     <title>NotepadKita - Penyimpanan</title>
 
     <style>
+
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            min-height: 100%;
+        }
+
         body {
-            margin: 0;
             font-family: Arial, sans-serif;
             background: #1976d2;
             min-height: 100vh;
             padding: 30px 15px;
+            overflow-y: auto;
         }
 
         .container {
             width: 100%;
-            max-width: 850px;
+            max-width: 1100px;
             margin: auto;
         }
 
@@ -43,51 +50,139 @@
             margin-bottom: 20px;
         }
 
-        .notes {
-            display: flex;
-            flex-direction: column;
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
-        .note {
+        .panel {
             background: white;
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
+            min-width: 0;
         }
 
-        .note h2 {
+        .panel h2 {
+            margin-bottom: 15px;
+        }
+
+        .catatan-title {
             color: #1976d2;
-            margin-top: 0;
-            word-break: break-word;
         }
 
-        .content {
+        .jurnal-title {
+            color: #7b1fa2;
+        }
+
+        .create {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .create-catatan {
+            background: #1976d2;
+        }
+
+        .create-jurnal {
+            background: #7b1fa2;
+        }
+
+        .notes-list {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+
+        .notes-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .notes-list::-webkit-scrollbar-thumb {
+            background: #aaa;
+            border-radius: 10px;
+        }
+
+        .notes-list::-webkit-scrollbar-track {
+            background: #eee;
+            border-radius: 10px;
+        }
+
+        .note {
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .note:last-child {
+            margin-bottom: 5px;
+        }
+
+        .note h3 {
+            word-break: break-word;
+            margin-bottom: 8px;
+        }
+
+        .note-content {
             white-space: pre-wrap;
             word-break: break-word;
-            line-height: 1.6;
+            line-height: 1.5;
             color: #333;
         }
 
         .date {
             color: #777;
-            font-size: 13px;
-            margin-top: 15px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .type-label {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .type-catatan {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-jurnal {
+            background: #f3e5f5;
+            color: #7b1fa2;
         }
 
         .buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         button {
             border: none;
-            padding: 11px 18px;
+            padding: 10px 15px;
             border-radius: 8px;
             color: white;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
         }
 
         .edit {
@@ -101,9 +196,9 @@
         .empty,
         .loading,
         .error {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
+            background: #f8f8f8;
+            padding: 25px;
+            border-radius: 12px;
             text-align: center;
         }
 
@@ -111,14 +206,16 @@
             color: #d32f2f;
         }
 
-        /* EDITOR */
-
         #editor {
             display: none;
             background: white;
             margin-top: 25px;
             padding: 20px;
             border-radius: 15px;
+        }
+
+        #editor h2 {
+            margin-bottom: 15px;
         }
 
         #editor input,
@@ -129,17 +226,20 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
+            font-family: Arial, sans-serif;
         }
 
         #editor textarea {
             min-height: 300px;
             resize: vertical;
+            line-height: 1.6;
         }
 
         .counter {
             text-align: right;
             color: #666;
             font-size: 13px;
+            margin-top: -5px;
         }
 
         .save {
@@ -150,12 +250,28 @@
             background: #777;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
+
+            body {
+                padding: 20px 10px;
+            }
+
+            .columns {
+                grid-template-columns: 1fr;
+            }
+
             .buttons {
                 flex-direction: column;
             }
+
+            .notes-list {
+                max-height: 400px;
+            }
+
         }
+
     </style>
+
 </head>
 
 <body>
@@ -168,15 +284,81 @@
         ← Kembali
     </a>
 
-    <div id="notes" class="notes">
-        <div class="loading">
-            Memuat catatan...
+    <div class="columns">
+
+        <!-- ============================== -->
+        <!-- CATATAN -->
+        <!-- ============================== -->
+
+        <div class="panel">
+
+            <h2 class="catatan-title">
+                📝 CATATAN
+            </h2>
+
+            <button
+                class="create create-catatan"
+                onclick="location.href='index3.html'"
+            >
+                + Buat Catatan
+            </button>
+
+            <div
+                id="catatanList"
+                class="notes-list"
+            >
+
+                <div class="loading">
+                    Memuat catatan...
+                </div>
+
+            </div>
+
         </div>
+
+
+        <!-- ============================== -->
+        <!-- JURNAL -->
+        <!-- ============================== -->
+
+        <div class="panel">
+
+            <h2 class="jurnal-title">
+                📖 JURNAL
+            </h2>
+
+            <button
+                class="create create-jurnal"
+                onclick="location.href='index8.html'"
+            >
+                + Buat Jurnal
+            </button>
+
+            <div
+                id="jurnalList"
+                class="notes-list"
+            >
+
+                <div class="loading">
+                    Memuat jurnal...
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+
+    <!-- ============================== -->
+    <!-- EDITOR -->
+    <!-- ============================== -->
 
     <div id="editor">
 
-        <h2>✏️ Edit Catatan</h2>
+        <h2 id="editorTitle">
+            ✏️ Edit
+        </h2>
 
         <input
             type="text"
@@ -186,30 +368,31 @@
 
         <textarea
             id="editContent"
-            maxlength="1000"
-            placeholder="Isi catatan"
+            maxlength="5000"
+            placeholder="Isi"
         ></textarea>
 
         <div class="counter">
-            <span id="counter">0</span> / 1000
+
+            <span id="counter">0</span>
+            / 5000
+
         </div>
 
         <div class="buttons">
 
             <button
                 class="save"
-                onclick="simpanEdit()">
-
+                id="saveEditButton"
+            >
                 💾 Simpan
-
             </button>
 
             <button
                 class="cancel"
-                onclick="tutupEditor()">
-
+                id="cancelEditButton"
+            >
                 Batal
-
             </button>
 
         </div>
@@ -222,518 +405,26 @@
 <script>
 
 let userToken = null;
+
 let editId = null;
 
+let semuaNotes = [];
 
-// =====================================
+let editType = null;
+
+
+// =================================================
 // COOKIE
-// =====================================
+// =================================================
 
 function getCookie(name) {
 
     const cookies =
         document.cookie.split(";");
 
-    for (let cookie of cookies) {
-
-        cookie = cookie.trim();
-
-        if (cookie.startsWith(name + "=")) {
-
-            return decodeURIComponent(
-                cookie.substring(
-                    name.length + 1
-                )
-            );
-
-        }
-
-    }
-
-    return null;
-}
-
-
-function setCookie(name, value) {
-
-    document.cookie =
-        name +
-        "=" +
-        encodeURIComponent(value) +
-        "; max-age=315360000; path=/; SameSite=Lax";
-
-}
-
-
-// =====================================
-// SIAPKAN USER
-// =====================================
-
-async function siapkanUser() {
-
-    userToken =
-        getCookie("notepadkita_user");
-
-    if (userToken) {
-        return true;
-    }
-
-    const response =
-        await fetch("/api/users", {
-            method: "POST"
-        });
-
-    const data =
-        await response.json();
-
-    if (!data.success) {
-
-        throw new Error(
-            "Gagal membuat user"
-        );
-
-    }
-
-    userToken =
-        data.userToken;
-
-    setCookie(
-        "notepadkita_user",
-        userToken
-    );
-
-    return true;
-}
-
-
-// =====================================
-// TAMPILKAN CATATAN
-// =====================================
-
-async function tampilkanCatatan() {
-
-    const box =
-        document.getElementById("notes");
-
-    try {
-
-        await siapkanUser();
-
-        const response =
-            await fetch(
-                "/api/notes/" +
-                encodeURIComponent(userToken)
-            );
-
-        const data =
-            await response.json();
-
-        if (!response.ok || !data.success) {
-
-            throw new Error(
-                data.message ||
-                "Gagal mengambil catatan"
-            );
-
-        }
-
-        if (
-            !data.notes ||
-            data.notes.length === 0
-        ) {
-
-            box.innerHTML = `
-                <div class="empty">
-                    <h2>Belum ada catatan</h2>
-                    <p>
-                        Buat catatan dari halaman
-                        "Buat Catatan".
-                    </p>
-                </div>
-            `;
-
-            return;
-        }
-
-        box.innerHTML = "";
-
-        data.notes.forEach(note => {
-
-            const element =
-                document.createElement("div");
-
-            element.className = "note";
-
-            element.innerHTML = `
-
-                <h2>
-                    ${aman(note.title)}
-                </h2>
-
-                <div class="content">
-                    ${aman(note.content)}
-                </div>
-
-                <div class="date">
-                    ${aman(note.updated_at)}
-                </div>
-
-                <div class="buttons">
-
-                    <button
-                        class="edit"
-                        onclick="bukaEdit(${note.id})">
-
-                        ✏️ Edit
-
-                    </button>
-
-                    <button
-                        class="delete"
-                        onclick="hapus(${note.id})">
-
-                        🗑️ Hapus
-
-                    </button>
-
-                </div>
-            `;
-
-            box.appendChild(element);
-
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        box.innerHTML = `
-            <div class="error">
-
-                <h2>Gagal memuat catatan</h2>
-
-                <p>
-                    ${aman(error.message)}
-                </p>
-
-            </div>
-        `;
-
-    }
-
-}
-
-
-// =====================================
-// BUKA EDIT
-// =====================================
-
-async function bukaEdit(id) {
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/notes/" +
-                encodeURIComponent(userToken)
-            );
-
-        const data =
-            await response.json();
-
-        const note =
-            data.notes.find(
-                n => n.id === id
-            );
-
-        if (!note) {
-
-            alert(
-                "Catatan tidak ditemukan."
-            );
-
-            return;
-        }
-
-        editId = id;
-
-        document.getElementById(
-            "editTitle"
-        ).value = note.title;
-
-        document.getElementById(
-            "editContent"
-        ).value = note.content;
-
-        updateCounter();
-
-        document.getElementById(
-            "editor"
-        ).style.display = "block";
-
-        document.getElementById(
-            "editor"
-        ).scrollIntoView({
-            behavior: "smooth"
-        });
-
-    } catch (error) {
-
-        alert(
-            "Gagal membuka catatan."
-        );
-
-    }
-
-}
-
-
-// =====================================
-// COUNTER
-// =====================================
-
-document.getElementById(
-    "editContent"
-).addEventListener(
-    "input",
-    updateCounter
-);
-
-
-function updateCounter() {
-
-    const value =
-        document.getElementById(
-            "editContent"
-        ).value;
-
-    document.getElementById(
-        "counter"
-    ).textContent =
-        value.length;
-
-}
-
-
-// =====================================
-// SIMPAN EDIT
-// =====================================
-
-async function simpanEdit() {
-
-    if (!editId) {
-        return;
-    }
-
-    const title =
-        document.getElementById(
-            "editTitle"
-        ).value.trim();
-
-    const content =
-        document.getElementById(
-            "editContent"
-        ).value;
-
-    if (!content.trim()) {
-
-        alert(
-            "Isi catatan tidak boleh kosong."
-        );
-
-        return;
-    }
-
-    if (content.length > 1000) {
-
-        alert(
-            "Maksimal 1000 karakter."
-        );
-
-        return;
-    }
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/notes/" + editId,
-                {
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        userToken:
-                            userToken,
-
-                        title:
-                            title ||
-                            "Tanpa Judul",
-
-                        content:
-                            content
-
-                    })
-                }
-            );
-
-        const data =
-            await response.json();
-
-        if (!response.ok || !data.success) {
-
-            throw new Error(
-                data.message ||
-                "Gagal menyimpan."
-            );
-
-        }
-
-        alert(
-            "Catatan berhasil diperbarui."
-        );
-
-        tutupEditor();
-
-        tampilkanCatatan();
-
-    } catch (error) {
-
-        alert(
-            error.message
-        );
-
-    }
-
-}
-
-
-// =====================================
-// TUTUP EDITOR
-// =====================================
-
-function tutupEditor() {
-
-    document.getElementById(
-        "editor"
-    ).style.display = "none";
-
-    editId = null;
-
-}
-
-
-// =====================================
-// HAPUS
-// =====================================
-
-async function hapus(id) {
-
-    if (
-        !confirm(
-            "Hapus catatan ini?"
-        )
+    for (
+        let cookie of cookies
     ) {
-        return;
-    }
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/notes/" + id,
-                {
-                    method: "DELETE",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        userToken:
-                            userToken
-
-                    })
-                }
-            );
-
-        const data =
-            await response.json();
-
-        if (!response.ok || !data.success) {
-
-            throw new Error(
-                data.message ||
-                "Gagal menghapus."
-            );
-
-        }
-
-        alert(
-            "Catatan berhasil dihapus."
-        );
-
-        tampilkanCatatan();
-
-    } catch (error) {
-
-        alert(
-            error.message
-        );
-
-    }
-
-}
-
-
-// =====================================
-// AMANKAN HTML
-// =====================================
-
-function aman(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        text ?? "";
-
-    return div.innerHTML;
-
-}
-
-
-// =====================================
-// MULAI
-// =====================================
-
-tampilkanCatatan();
-
-</script>
-```html
-<script>
-
-let userToken = null;
-let editId = null;
-
-
-// =====================================
-// COOKIE
-// =====================================
-
-function getCookie(name) {
-
-    const cookies =
-        document.cookie.split(";");
-
-    for (let cookie of cookies) {
 
         cookie = cookie.trim();
 
@@ -754,10 +445,14 @@ function getCookie(name) {
     }
 
     return null;
+
 }
 
 
-function setCookie(name, value) {
+function setCookie(
+    name,
+    value
+) {
 
     document.cookie =
         name +
@@ -768,9 +463,9 @@ function setCookie(name, value) {
 }
 
 
-// =====================================
+// =================================================
 // SIAPKAN USER
-// =====================================
+// =================================================
 
 async function siapkanUser() {
 
@@ -779,154 +474,162 @@ async function siapkanUser() {
             "notepadkita_user"
         );
 
-
     if (userToken) {
-
         return true;
-
     }
-
-
-    const response =
-        await fetch(
-            "/api/users",
-            {
-                method: "POST"
-            }
-        );
-
-
-    const data =
-        await response.json();
-
-
-    if (
-        !response.ok ||
-        !data.success
-    ) {
-
-        throw new Error(
-            "Gagal membuat user"
-        );
-
-    }
-
-
-    userToken =
-        data.userToken;
-
-
-    setCookie(
-        "notepadkita_user",
-        userToken
-    );
-
-
-    return true;
-
-}
-
-
-// =====================================
-// HEARTBEAT
-// =====================================
-
-let heartbeatInterval = null;
-
-
-async function heartbeat() {
-
-    const token =
-        getCookie(
-            "notepadkita_user"
-        );
-
-
-    if (!token) {
-
-        return;
-
-    }
-
 
     try {
 
         const response =
             await fetch(
-                `/api/users/${encodeURIComponent(
-                    token
-                )}/heartbeat`,
+                "/api/users",
                 {
                     method: "POST"
                 }
             );
 
-
         if (!response.ok) {
 
-            console.log(
-                "Heartbeat gagal."
+            throw new Error(
+                "Gagal membuat pengguna."
             );
 
         }
 
+        const data =
+            await response.json();
+
+        if (
+            !data.success ||
+            !data.userToken
+        ) {
+
+            throw new Error(
+                data.message ||
+                "User tidak valid."
+            );
+
+        }
+
+        userToken =
+            data.userToken;
+
+        setCookie(
+            "notepadkita_user",
+            userToken
+        );
+
+        return true;
+
     } catch (error) {
 
         console.error(
-            "Heartbeat error:",
             error
         );
 
+        return false;
+
     }
 
 }
 
 
-async function mulaiHeartbeat() {
+// =================================================
+// JSON
+// =================================================
 
-    await siapkanUser();
+async function bacaJSON(
+    response
+) {
 
+    const text =
+        await response.text();
 
-    // Kirim pertama kali
+    if (!text) {
 
-    await heartbeat();
-
-
-    if (heartbeatInterval) {
-
-        clearInterval(
-            heartbeatInterval
+        throw new Error(
+            "Server mengirim response kosong."
         );
 
     }
 
+    try {
 
-    // Setiap 20 detik
+        return JSON.parse(text);
 
-    heartbeatInterval =
-        setInterval(
-            heartbeat,
-            20000
+    } catch {
+
+        throw new Error(
+            "Server mengirim data yang tidak valid."
         );
+
+    }
 
 }
 
 
-// =====================================
-// TAMPILKAN CATATAN
-// =====================================
+// =================================================
+// AMAN HTML
+// =================================================
+
+function aman(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+// =================================================
+// TAMPILKAN DATA
+// =================================================
 
 async function tampilkanCatatan() {
 
-    const box =
+    const catatanBox =
         document.getElementById(
-            "notes"
+            "catatanList"
         );
+
+    const jurnalBox =
+        document.getElementById(
+            "jurnalList"
+        );
+
+
+    catatanBox.innerHTML = `
+        <div class="loading">
+            Memuat catatan...
+        </div>
+    `;
+
+
+    jurnalBox.innerHTML = `
+        <div class="loading">
+            Memuat jurnal...
+        </div>
+    `;
 
 
     try {
 
-        await siapkanUser();
+        const siap =
+            await siapkanUser();
+
+        if (!siap) {
+
+            throw new Error(
+                "Pengguna tidak dapat disiapkan."
+            );
+
+        }
 
 
         const response =
@@ -939,7 +642,9 @@ async function tampilkanCatatan() {
 
 
         const data =
-            await response.json();
+            await bacaJSON(
+                response
+            );
 
 
         if (
@@ -949,43 +654,147 @@ async function tampilkanCatatan() {
 
             throw new Error(
                 data.message ||
-                "Gagal mengambil catatan"
+                "Gagal mengambil data."
             );
 
         }
 
 
-        if (
-            !data.notes ||
-            data.notes.length === 0
-        ) {
-
-            box.innerHTML = `
-
-                <div class="empty">
-
-                    <h2>
-                        Belum ada catatan
-                    </h2>
-
-                    <p>
-                        Buat catatan dari halaman
-                        "Buat Catatan".
-                    </p>
-
-                </div>
-
-            `;
-
-            return;
-
-        }
+        semuaNotes =
+            Array.isArray(
+                data.notes
+            )
+                ? data.notes
+                : [];
 
 
-        box.innerHTML = "";
+        // =========================================
+        // PEMISAHAN WAJIB BERDASARKAN TYPE
+        // =========================================
+
+        const catatan =
+            semuaNotes.filter(
+                note =>
+                    note.type ===
+                    "catatan"
+            );
 
 
-        data.notes.forEach(note => {
+        const jurnal =
+            semuaNotes.filter(
+                note =>
+                    note.type ===
+                    "jurnal"
+            );
+
+
+        tampilkanDaftar(
+            catatanBox,
+            catatan,
+            "catatan"
+        );
+
+
+        tampilkanDaftar(
+            jurnalBox,
+            jurnal,
+            "jurnal"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        catatanBox.innerHTML = `
+            <div class="error">
+
+                <h3>
+                    Gagal memuat catatan
+                </h3>
+
+                <p>
+                    ${aman(
+                        error.message
+                    )}
+                </p>
+
+            </div>
+        `;
+
+
+        jurnalBox.innerHTML = `
+            <div class="error">
+
+                <h3>
+                    Gagal memuat jurnal
+                </h3>
+
+                <p>
+                    ${aman(
+                        error.message
+                    )}
+                </p>
+
+            </div>
+        `;
+
+    }
+
+}
+
+
+// =================================================
+// TAMPILKAN LIST
+// =================================================
+
+function tampilkanDaftar(
+    box,
+    notes,
+    type
+) {
+
+    if (
+        notes.length === 0
+    ) {
+
+        box.innerHTML = `
+
+            <div class="empty">
+
+                <h3>
+                    ${
+                        type === "jurnal"
+                            ? "Belum ada jurnal"
+                            : "Belum ada catatan"
+                    }
+                </h3>
+
+                <p>
+                    ${
+                        type === "jurnal"
+                            ? "Buat jurnal baru."
+                            : "Buat catatan baru."
+                    }
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    box.innerHTML = "";
+
+
+    notes.forEach(
+        function(note) {
 
             const element =
                 document.createElement(
@@ -997,36 +806,66 @@ async function tampilkanCatatan() {
                 "note";
 
 
+            const label =
+                type === "jurnal"
+                    ? "📖 JURNAL"
+                    : "📝 CATATAN";
+
+
+            const labelClass =
+                type === "jurnal"
+                    ? "type-jurnal"
+                    : "type-catatan";
+
+
             element.innerHTML = `
 
-                <h2>
-                    ${aman(note.title)}
-                </h2>
+                <div
+                    class="type-label ${labelClass}"
+                >
+                    ${label}
+                </div>
 
-                <div class="content">
-                    ${aman(note.content)}
+                <h3>
+                    ${aman(
+                        note.title ||
+                        (
+                            type === "jurnal"
+                                ? "Jurnal Tanpa Judul"
+                                : "Tanpa Judul"
+                        )
+                    )}
+                </h3>
+
+                <div class="note-content">
+                    ${aman(
+                        note.content
+                    )}
                 </div>
 
                 <div class="date">
-                    ${aman(note.updated_at)}
+                    Terakhir diperbarui:
+                    ${aman(
+                        note.updated_at ||
+                        note.created_at ||
+                        ""
+                    )}
                 </div>
 
                 <div class="buttons">
 
                     <button
                         class="edit"
-                        onclick="bukaEdit(${note.id})">
-
+                        onclick="bukaEdit(${note.id})"
+                    >
                         ✏️ Edit
-
                     </button>
 
                     <button
                         class="delete"
-                        onclick="hapus(${note.id})">
-
+                        onclick="hapus(${note.id})"
+                    >
                         🗑️ Hapus
-
                     </button>
 
                 </div>
@@ -1038,118 +877,83 @@ async function tampilkanCatatan() {
                 element
             );
 
-        });
-
-
-    } catch (error) {
-
-        console.error(error);
-
-
-        box.innerHTML = `
-
-            <div class="error">
-
-                <h2>
-                    Gagal memuat catatan
-                </h2>
-
-                <p>
-                    ${aman(error.message)}
-                </p>
-
-            </div>
-
-        `;
-
-    }
+        }
+    );
 
 }
 
 
-// =====================================
-// BUKA EDIT
-// =====================================
+// =================================================
+// EDIT
+// =================================================
 
-async function bukaEdit(id) {
+function bukaEdit(id) {
 
-    try {
-
-        const response =
-            await fetch(
-                "/api/notes/" +
-                encodeURIComponent(
-                    userToken
-                )
-            );
-
-
-        const data =
-            await response.json();
-
-
-        const note =
-            data.notes.find(
-                n => n.id === id
-            );
-
-
-        if (!note) {
-
-            alert(
-                "Catatan tidak ditemukan."
-            );
-
-            return;
-
-        }
-
-
-        editId = id;
-
-
-        document.getElementById(
-            "editTitle"
-        ).value =
-            note.title;
-
-
-        document.getElementById(
-            "editContent"
-        ).value =
-            note.content;
-
-
-        updateCounter();
-
-
-        document.getElementById(
-            "editor"
-        ).style.display =
-            "block";
-
-
-        document.getElementById(
-            "editor"
-        ).scrollIntoView({
-            behavior: "smooth"
-        });
-
-
-    } catch (error) {
-
-        alert(
-            "Gagal membuka catatan."
+    const note =
+        semuaNotes.find(
+            n => n.id === id
         );
 
+
+    if (!note) {
+
+        alert(
+            "Data tidak ditemukan."
+        );
+
+        return;
+
     }
+
+
+    editId =
+        id;
+
+    editType =
+        note.type;
+
+
+    document.getElementById(
+        "editTitle"
+    ).value =
+        note.title || "";
+
+
+    document.getElementById(
+        "editContent"
+    ).value =
+        note.content || "";
+
+
+    document.getElementById(
+        "editorTitle"
+    ).textContent =
+        note.type === "jurnal"
+            ? "✏️ Edit Jurnal"
+            : "✏️ Edit Catatan";
+
+
+    updateCounter();
+
+
+    document.getElementById(
+        "editor"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "editor"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
 
 }
 
 
-// =====================================
+// =================================================
 // COUNTER
-// =====================================
+// =================================================
 
 document.getElementById(
     "editContent"
@@ -1175,16 +979,14 @@ function updateCounter() {
 }
 
 
-// =====================================
+// =================================================
 // SIMPAN EDIT
-// =====================================
+// =================================================
 
 async function simpanEdit() {
 
     if (!editId) {
-
         return;
-
     }
 
 
@@ -1203,7 +1005,7 @@ async function simpanEdit() {
     if (!content.trim()) {
 
         alert(
-            "Isi catatan tidak boleh kosong."
+            "Isi tidak boleh kosong."
         );
 
         return;
@@ -1211,15 +1013,30 @@ async function simpanEdit() {
     }
 
 
-    if (content.length > 1000) {
+    if (
+        content.length > 5000
+    ) {
 
         alert(
-            "Maksimal 1000 karakter."
+            "Maksimal 5000 karakter."
         );
 
         return;
 
     }
+
+
+    const button =
+        document.getElementById(
+            "saveEditButton"
+        );
+
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "Menyimpan...";
 
 
     try {
@@ -1229,7 +1046,6 @@ async function simpanEdit() {
                 "/api/notes/" +
                 editId,
                 {
-
                     method: "PUT",
 
                     headers: {
@@ -1237,26 +1053,34 @@ async function simpanEdit() {
                             "application/json"
                     },
 
-                    body: JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                        userToken:
-                            userToken,
+                            userToken:
+                                userToken,
 
-                        title:
-                            title ||
-                            "Tanpa Judul",
+                            title:
+                                title ||
+                                (
+                                    editType ===
+                                    "jurnal"
+                                        ? "Jurnal Tanpa Judul"
+                                        : "Tanpa Judul"
+                                ),
 
-                        content:
-                            content
+                            content:
+                                content
 
-                    })
+                        })
 
                 }
             );
 
 
         const data =
-            await response.json();
+            await bacaJSON(
+                response
+            );
 
 
         if (
@@ -1266,37 +1090,50 @@ async function simpanEdit() {
 
             throw new Error(
                 data.message ||
-                "Gagal menyimpan."
+                "Gagal menyimpan perubahan."
             );
 
         }
 
 
         alert(
-            "Catatan berhasil diperbarui."
+            "Berhasil diperbarui."
         );
 
 
         tutupEditor();
 
 
-        tampilkanCatatan();
+        await tampilkanCatatan();
 
 
     } catch (error) {
 
-        alert(
-            error.message
+        console.error(
+            error
         );
+
+        alert(
+            error.message ||
+            "Gagal menyimpan."
+        );
+
+    } finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "💾 Simpan";
 
     }
 
 }
 
 
-// =====================================
+// =================================================
 // TUTUP EDITOR
-// =====================================
+// =================================================
 
 function tutupEditor() {
 
@@ -1306,20 +1143,76 @@ function tutupEditor() {
         "none";
 
 
-    editId = null;
+    document.getElementById(
+        "editTitle"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "editContent"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "counter"
+    ).textContent =
+        "0";
+
+
+    document.getElementById(
+        "editorTitle"
+    ).textContent =
+        "✏️ Edit";
+
+
+    editId =
+        null;
+
+    editType =
+        null;
 
 }
 
 
-// =====================================
+document.getElementById(
+    "cancelEditButton"
+).addEventListener(
+    "click",
+    tutupEditor
+);
+
+
+document.getElementById(
+    "saveEditButton"
+).addEventListener(
+    "click",
+    simpanEdit
+);
+
+
+// =================================================
 // HAPUS
-// =====================================
+// =================================================
 
 async function hapus(id) {
 
+    const note =
+        semuaNotes.find(
+            n => n.id === id
+        );
+
+
+    const nama =
+        note?.type === "jurnal"
+            ? "jurnal"
+            : "catatan";
+
+
     if (
         !confirm(
-            "Hapus catatan ini?"
+            `Hapus ${nama} ini?`
         )
     ) {
 
@@ -1335,7 +1228,6 @@ async function hapus(id) {
                 "/api/notes/" +
                 id,
                 {
-
                     method: "DELETE",
 
                     headers: {
@@ -1343,19 +1235,22 @@ async function hapus(id) {
                             "application/json"
                     },
 
-                    body: JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                        userToken:
-                            userToken
+                            userToken:
+                                userToken
 
-                    })
+                        })
 
                 }
             );
 
 
         const data =
-            await response.json();
+            await bacaJSON(
+                response
+            );
 
 
         if (
@@ -1372,17 +1267,22 @@ async function hapus(id) {
 
 
         alert(
-            "Catatan berhasil dihapus."
+            `${nama} berhasil dihapus.`
         );
 
 
-        tampilkanCatatan();
+        await tampilkanCatatan();
 
 
     } catch (error) {
 
+        console.error(
+            error
+        );
+
         alert(
-            error.message
+            error.message ||
+            "Gagal menghapus."
         );
 
     }
@@ -1390,70 +1290,99 @@ async function hapus(id) {
 }
 
 
-// =====================================
-// AMANKAN HTML
-// =====================================
+// =================================================
+// HEARTBEAT
+// =================================================
 
-function aman(text) {
+async function heartbeat() {
 
-    const div =
-        document.createElement(
-            "div"
+    const token =
+        getCookie(
+            "notepadkita_user"
         );
 
 
-    div.textContent =
-        text ?? "";
+    if (!token) {
+        return;
+    }
 
-
-    return div.innerHTML;
-
-}
-
-
-// =====================================
-// MULAI
-// =====================================
-
-async function mulai() {
 
     try {
 
-        await siapkanUser();
-
-        await heartbeat();
-
-        tampilkanCatatan();
-
-        mulaiHeartbeat();
+        await fetch(
+            "/api/users/" +
+            encodeURIComponent(
+                token
+            ) +
+            "/heartbeat",
+            {
+                method: "POST"
+            }
+        );
 
     } catch (error) {
 
-        console.error(error);
-
-        const box =
-            document.getElementById(
-                "notes"
-            );
-
-
-        box.innerHTML = `
-
-            <div class="error">
-
-                <h2>
-                    Gagal memuat pengguna
-                </h2>
-
-                <p>
-                    Silakan coba refresh halaman.
-                </p>
-
-            </div>
-
-        `;
+        console.warn(
+            "Heartbeat gagal:",
+            error
+        );
 
     }
+
+}
+
+
+function mulaiHeartbeat() {
+
+    heartbeat();
+
+
+    setInterval(
+        heartbeat,
+        20000
+    );
+
+}
+
+
+// =================================================
+// MULAI
+// =================================================
+
+async function mulai() {
+
+    const siap =
+        await siapkanUser();
+
+
+    if (!siap) {
+
+        document.getElementById(
+            "catatanList"
+        ).innerHTML = `
+            <div class="error">
+                Gagal menyiapkan pengguna.
+            </div>
+        `;
+
+
+        document.getElementById(
+            "jurnalList"
+        ).innerHTML = `
+            <div class="error">
+                Gagal menyiapkan pengguna.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    await tampilkanCatatan();
+
+
+    mulaiHeartbeat();
 
 }
 
@@ -1463,4 +1392,5 @@ mulai();
 </script>
 
 </body>
+
 </html>

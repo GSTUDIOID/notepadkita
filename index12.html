@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NotepadKita - Pengaturan</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #2196f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #222;
+        }
+
+        .account-box {
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .info {
+            padding: 14px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .info:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #222;
+            word-break: break-word;
+        }
+
+        .user-number {
+            font-size: 28px;
+            color: #2196f3;
+        }
+
+        .loading {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        .error {
+            text-align: center;
+            color: #d32f2f;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background: #2196f3;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .back-button:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="panel">
+
+        <h1>⚙️ Pengaturan</h1>
+
+        <div id="loading" class="loading">
+            Memuat informasi akun...
+        </div>
+
+        <div id="accountInfo" class="account-box" style="display:none;">
+
+            <div class="info">
+                <div class="label">
+                    Nomor User
+                </div>
+
+                <div
+                    id="userNumber"
+                    class="value user-number"
+                >
+                    -
+                </div>
+            </div>
+
+            <div class="info">
+                <div class="label">
+                    Akun dibuat
+                </div>
+
+                <div
+                    id="createdAt"
+                    class="value"
+                >
+                    -
+                </div>
+            </div>
+
+            <div class="info">
+                <div class="label">
+                    User Token
+                </div>
+
+                <div
+                    id="userToken"
+                    class="value"
+                >
+                    -
+                </div>
+            </div>
+
+            <div class="info">
+                <div class="label">
+                    Asal akun
+                </div>
+
+                <div
+                    id="origin"
+                    class="value"
+                >
+                    NotepadKita
+                </div>
+            </div>
+
+        </div>
+
+        <div id="error" class="error" style="display:none;">
+            Gagal memuat informasi akun.
+        </div>
+
+        <a
+            href="index2.html"
+            class="back-button"
+        >
+            ← Kembali ke Menu
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+
+    const COOKIE_NAME = "notepadkita_user";
+
+    function getCookie(name) {
+
+        const cookies = document.cookie.split(";");
+
+        for (let cookie of cookies) {
+
+            cookie = cookie.trim();
+
+            if (cookie.startsWith(name + "=")) {
+                return decodeURIComponent(
+                    cookie.substring(name.length + 1)
+                );
+            }
+
+        }
+
+        return null;
+    }
+
+    function formatTanggal(dateString) {
+
+        if (!dateString) {
+            return "-";
+        }
+
+        const date = new Date(
+            dateString.replace(" ", "T") + "Z"
+        );
+
+        if (isNaN(date.getTime())) {
+            return dateString;
+        }
+
+        return date.toLocaleString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+    }
+
+    async function loadAccount() {
+
+        const userToken = getCookie(COOKIE_NAME);
+
+        if (!userToken) {
+
+            document.getElementById("loading").style.display = "none";
+
+            document.getElementById("error").textContent =
+                "Akun tidak ditemukan. Silakan masuk kembali.";
+
+            document.getElementById("error").style.display = "block";
+
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `/api/users/${userToken}`
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success || !data.user) {
+                throw new Error("User tidak ditemukan");
+            }
+
+            const user = data.user;
+
+            document.getElementById("userNumber").textContent =
+                "#" + user.id;
+
+            document.getElementById("createdAt").textContent =
+                formatTanggal(user.created_at);
+
+            document.getElementById("userToken").textContent =
+                user.user_token;
+
+            document.getElementById("origin").textContent =
+                "NotepadKita";
+
+            document.getElementById("loading").style.display =
+                "none";
+
+            document.getElementById("accountInfo").style.display =
+                "block";
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("loading").style.display =
+                "none";
+
+            document.getElementById("error").style.display =
+                "block";
+        }
+    }
+
+    loadAccount();
+
+</script>
+
+</body>
+</html>

@@ -1,354 +1,212 @@
-
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - NotepadKita</title>
 
     <style>
-
         * {
             box-sizing: border-box;
+        }
+
+        html,
+        body {
             margin: 0;
             padding: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
         }
 
         body {
-
-            min-height: 100vh;
-
-            font-family: Arial, sans-serif;
-
-            background: #1976d2;
-
-            padding: 30px 20px;
-
-            color: #333;
-
+            background: #0d6efd;
+            color: white;
+            padding: 25px 15px 40px;
+            overflow-y: auto;
         }
 
         .container {
-
             width: 100%;
-
             max-width: 900px;
-
             margin: auto;
+        }
 
+        .login-box,
+        .admin-panel {
+            background: white;
+            color: #222;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,.2);
+        }
+
+        .login-box {
+            max-width: 450px;
+            margin: 70px auto;
+            text-align: center;
         }
 
         h1 {
-
-            color: white;
-
-            text-align: center;
-
-            margin-bottom: 10px;
-
+            margin-top: 0;
         }
 
-        .subtitle {
-
-            color: #e3f2fd;
-
-            text-align: center;
-
-            margin-bottom: 30px;
-
-        }
-
-        .panel {
-
-            background: white;
-
-            border-radius: 18px;
-
-            padding: 25px;
-
-            box-shadow:
-                0 8px 25px
-                rgba(0, 0, 0, 0.2);
-
-        }
-
-        .status {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            background: #e8f5e9;
-
-            color: #2e7d32;
-
-            padding: 15px;
-
-            border-radius: 10px;
-
-            margin-bottom: 25px;
-
-            font-weight: bold;
-
-        }
-
-        .dot {
-
-            width: 12px;
-
-            height: 12px;
-
-            background: #2e7d32;
-
-            border-radius: 50%;
-
-        }
-
-        .stats {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap: 15px;
-
-            margin-bottom: 25px;
-
-        }
-
-        .stat {
-
-            background: #f5f9ff;
-
-            border: 1px solid #d7e9ff;
-
-            padding: 20px;
-
-            border-radius: 12px;
-
-            text-align: center;
-
-        }
-
-        .stat-number {
-
-            font-size: 32px;
-
-            font-weight: bold;
-
-            color: #1976d2;
-
-        }
-
-        .stat-label {
-
-            color: #777;
-
-            margin-top: 5px;
-
-        }
-
-        h2 {
-
-            color: #1976d2;
-
-            margin-bottom: 15px;
-
-        }
-
-        .users {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 10px;
-
-        }
-
-        .user {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            background: #f7f7f7;
-
-            padding: 15px;
-
-            border-radius: 10px;
-
-        }
-
-        .user-info {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-        }
-
-        .user-dot {
-
-            width: 10px;
-
-            height: 10px;
-
-            background: #2e7d32;
-
-            border-radius: 50%;
-
-        }
-
-        .user-name {
-
-            font-weight: bold;
-
-        }
-
-        .user-status {
-
-            color: #2e7d32;
-
-            font-size: 13px;
-
-        }
-
-        .empty {
-
-            background: #f5f5f5;
-
-            padding: 25px;
-
-            border-radius: 10px;
-
-            text-align: center;
-
-            color: #777;
-
-        }
-
-        .refresh {
-
+        .login-box input {
             width: 100%;
-
-            margin-top: 20px;
-
-            padding: 13px;
-
-            border: none;
-
-            border-radius: 8px;
-
-            background: #1976d2;
-
-            color: white;
-
+            padding: 14px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 9px;
             font-size: 16px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
         }
 
-        .refresh:hover {
+        button,
+        .admin-button,
+        .back {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
 
-            background: #125ca8;
+        button,
+        .admin-button {
+            background: #0d6efd;
+            color: white;
+        }
 
+        .admin-button:hover,
+        button:hover {
+            opacity: .9;
         }
 
         .back {
-
-            display: block;
-
-            text-align: center;
-
-            color: white;
-
-            border: 2px solid white;
-
-            text-decoration: none;
-
-            padding: 13px;
-
-            border-radius: 8px;
-
-            margin-top: 20px;
-
-            font-weight: bold;
-
+            background: #f1f5f9;
+            color: #0d6efd;
         }
 
-        .back:hover {
+        .description {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            opacity: .8;
+            font-weight: normal;
+        }
 
-            background: white;
+        .error {
+            color: #dc2626;
+            margin-top: 10px;
+            display: none;
+        }
 
-            color: #1976d2;
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
 
+        .stat {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .stat-label {
+            margin-top: 5px;
+            color: #555;
+        }
+
+        .user-list {
+            margin-top: 20px;
+        }
+
+        .user {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .online {
+            color: #059669;
+            font-weight: bold;
+        }
+
+        .logout {
+            background: #dc2626;
         }
 
         @media (max-width: 600px) {
-
             .stats {
-
                 grid-template-columns: 1fr;
-
             }
-
-            .user {
-
-                align-items: flex-start;
-
-                gap: 10px;
-
-            }
-
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
 <div class="container">
 
-    <h1>
-        🛠️ Admin Panel
-    </h1>
+    <!-- LOGIN -->
+    <div id="loginBox" class="login-box">
 
-    <p class="subtitle">
-        Monitor pengguna NotepadKita
-    </p>
+        <h1>🔐 Admin Panel</h1>
 
+        <p>Masukkan password administrator.</p>
 
-    <div class="panel">
+        <input
+            type="password"
+            id="password"
+            placeholder="Password Admin"
+            autocomplete="off"
+        >
 
+        <button onclick="loginAdmin()">
+            Masuk Admin
+        </button>
 
-        <div class="status">
-
-            <span class="dot"></span>
-
-            Sistem Admin Aktif
-
+        <div
+            id="loginError"
+            class="error"
+        >
+            Password admin salah.
         </div>
+
+        <a
+            href="index2.html"
+            class="back"
+        >
+            ← Kembali
+        </a>
+
+    </div>
+
+
+    <!-- ADMIN PANEL -->
+    <div
+        id="adminPanel"
+        class="admin-panel"
+        style="display:none;"
+    >
+
+        <h1>🛡️ Admin Panel</h1>
+
+        <p>
+            Panel administrator NotepadKita
+        </p>
 
 
         <div class="stats">
@@ -356,14 +214,14 @@
             <div class="stat">
 
                 <div
-                    class="stat-number"
                     id="onlineCount"
+                    class="stat-number"
                 >
                     0
                 </div>
 
                 <div class="stat-label">
-                    Pengguna Online
+                    User Online
                 </div>
 
             </div>
@@ -372,14 +230,14 @@
             <div class="stat">
 
                 <div
-                    class="stat-number"
                     id="totalCount"
+                    class="stat-number"
                 >
                     0
                 </div>
 
                 <div class="stat-label">
-                    Total Pengguna
+                    Total User
                 </div>
 
             </div>
@@ -387,260 +245,420 @@
         </div>
 
 
-        <h2>
-            👥 Pengguna Live
-        </h2>
+        <a
+            href="index13.html"
+            class="admin-button"
+        >
+            👥 Info Semua Akun User
 
+            <span class="description">
+                Lihat seluruh akun pengguna
+            </span>
+        </a>
+
+
+        <a
+            href="index9.html"
+            class="admin-button"
+        >
+            📖 Jurnal Khusus Admin
+
+            <span class="description">
+                Kelola jurnal khusus admin
+            </span>
+        </a>
+
+
+        <a
+            href="index10.html"
+            class="admin-button"
+        >
+            💾 Penyimpanan Admin
+
+            <span class="description">
+                Kelola penyimpanan admin
+            </span>
+        </a>
+
+
+        <a
+            href="index11.html"
+            class="admin-button"
+        >
+            🔒 Secret Vault
+
+            <span class="description">
+                Ruang rahasia administrator
+            </span>
+        </a>
+
+
+        <h3>
+            👤 User Online
+        </h3>
 
         <div
-            id="users"
-            class="users"
+            id="userList"
+            class="user-list"
         >
-
-            <div class="empty">
-                Memuat pengguna...
-            </div>
-
+            Memuat...
         </div>
 
 
         <button
-            class="refresh"
-            onclick="loadUsers()"
+            onclick="loadOnlineUsers()"
         >
             🔄 Refresh
         </button>
 
 
+        <button
+            class="logout"
+            onclick="logoutAdmin()"
+        >
+            🚪 Keluar Admin
+        </button>
+
+
+        <a
+            href="index2.html"
+            class="back"
+        >
+            ← Kembali ke Menu
+        </a>
+
     </div>
-
-
-    <a
-        href="index2.html"
-        class="back"
-    >
-        ← Kembali ke Menu
-    </a>
 
 </div>
 
 
 <script>
 
-async function loadUsers() {
+let adminToken =
+    localStorage.getItem(
+        "notepadkita_admin_token"
+    );
 
-    const users =
-        document.getElementById(
-            "users"
-        );
+
+async function loginAdmin() {
+
+    const password =
+        document
+            .getElementById("password")
+            .value;
+
+    const error =
+        document
+            .getElementById("loginError");
+
+    error.style.display = "none";
+
+
+    if (!password) {
+
+        error.textContent =
+            "Password wajib diisi.";
+
+        error.style.display =
+            "block";
+
+        return;
+    }
+
 
     try {
 
         const response =
             await fetch(
-                "/api/admin/online-users"
+                "/api/admin/login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        password: password
+                    })
+                }
             );
+
 
         const data =
             await response.json();
 
 
-        if (
-            !response.ok ||
-            !data.success
-        ) {
+        if (!data.success) {
 
-            throw new Error(
+            error.textContent =
                 data.message ||
-                "Gagal mengambil pengguna."
-            );
+                "Password admin salah.";
 
-        }
-
-
-        document.getElementById(
-            "onlineCount"
-        ).textContent =
-            data.onlineCount;
-
-
-        document.getElementById(
-            "totalCount"
-        ).textContent =
-            data.totalCount;
-
-
-        if (
-            data.users.length === 0
-        ) {
-
-            users.innerHTML = `
-
-                <div class="empty">
-                    Tidak ada pengguna online.
-                </div>
-
-            `;
+            error.style.display =
+                "block";
 
             return;
-
         }
 
 
-        users.innerHTML = "";
+        adminToken =
+            data.adminToken;
 
 
-        data.users.forEach(user => {
-
-            const element =
-                document.createElement(
-                    "div"
-                );
-
-            element.className =
-                "user";
+        localStorage.setItem(
+            "notepadkita_admin_token",
+            adminToken
+        );
 
 
-            element.innerHTML = `
+        showAdminPanel();
 
-                <div class="user-info">
+    } catch (err) {
 
-                    <span class="user-dot"></span>
+        error.textContent =
+            "Server tidak dapat dihubungi.";
 
-                    <div>
-
-                        <div class="user-name">
-                            ${escapeHTML(
-                                user.username
-                            )}
-                        </div>
-
-                        <div class="user-status">
-                            Online
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div>
-                    🟢
-                </div>
-
-            `;
+        error.style.display =
+            "block";
+    }
+}
 
 
-            users.appendChild(
-                element
+async function checkAdmin() {
+
+    if (!adminToken) {
+        return false;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/check",
+                {
+                    headers: {
+                        "X-Admin-Token":
+                            adminToken
+                    }
+                }
             );
 
-        });
+
+        if (!response.ok) {
+
+            localStorage.removeItem(
+                "notepadkita_admin_token"
+            );
+
+            adminToken = null;
+
+            return false;
+        }
+
+
+        const data =
+            await response.json();
+
+        return data.success === true;
+
+    } catch (error) {
+
+        return false;
+    }
+}
+
+
+async function showAdminPanel() {
+
+    const valid =
+        await checkAdmin();
+
+    if (!valid) {
+
+        document
+            .getElementById("loginBox")
+            .style.display = "block";
+
+        document
+            .getElementById("adminPanel")
+            .style.display = "none";
+
+        return;
+    }
+
+
+    document
+        .getElementById("loginBox")
+        .style.display = "none";
+
+    document
+        .getElementById("adminPanel")
+        .style.display = "block";
+
+
+    loadOnlineUsers();
+}
+
+
+async function loadOnlineUsers() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/online-users",
+                {
+                    headers: {
+                        "X-Admin-Token":
+                            adminToken
+                    }
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            logoutAdmin();
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+            return;
+        }
+
+
+        document
+            .getElementById("onlineCount")
+            .textContent =
+            data.onlineCount ?? 0;
+
+
+        document
+            .getElementById("totalCount")
+            .textContent =
+            data.totalCount ?? 0;
+
+
+        const list =
+            document
+                .getElementById("userList");
+
+
+        const users =
+            data.users || [];
+
+
+        if (users.length === 0) {
+
+            list.innerHTML =
+                "Tidak ada user online.";
+
+            return;
+        }
+
+
+        list.innerHTML =
+            users.map(user => `
+                <div class="user">
+                    <span class="online">
+                        ● ONLINE
+                    </span>
+                    &nbsp;
+                    User #${user.id}
+                    <br>
+                    <small>
+                        Terakhir aktif:
+                        ${user.last_seen || "-"}
+                    </small>
+                </div>
+            `).join("");
 
 
     } catch (error) {
 
         console.error(error);
 
-        users.innerHTML = `
+        document
+            .getElementById("userList")
+            .textContent =
+            "Gagal mengambil data.";
+    }
+}
 
-            <div class="empty">
 
-                Gagal memuat pengguna.
+async function logoutAdmin() {
 
-            </div>
+    try {
 
-        `;
+        if (adminToken) {
 
+            await fetch(
+                "/api/admin/logout",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-Admin-Token":
+                            adminToken
+                    }
+                }
+            );
+        }
+
+    } catch (error) {
+
+        console.error(error);
     }
 
+
+    localStorage.removeItem(
+        "notepadkita_admin_token"
+    );
+
+    adminToken = null;
+
+
+    document
+        .getElementById("adminPanel")
+        .style.display = "none";
+
+    document
+        .getElementById("loginBox")
+        .style.display = "block";
+
+    document
+        .getElementById("password")
+        .value = "";
 }
 
 
-function escapeHTML(text) {
+// Tekan Enter untuk login
+document
+    .getElementById("password")
+    .addEventListener(
+        "keydown",
+        event => {
 
-    const div =
-        document.createElement(
-            "div"
-        );
+            if (event.key === "Enter") {
+                loginAdmin();
+            }
 
-    div.textContent =
-        text ?? "";
-
-    return div.innerHTML;
-
-}
-
-
-// Muat pertama kali
-
-loadUsers();
+        }
+    );
 
 
-// Perbarui setiap 10 detik
-
-setInterval(
-    loadUsers,
-    10000
-);
+// Cek sesi saat halaman dibuka
+showAdminPanel();
 
 </script>
 
-<!-- JURNAL KHUSUS ADMIN -->
-
-<div style="
-    width: 100%;
-    max-width: 700px;
-    margin: 35px auto 50px;
-    padding: 0 20px;
-">
-
-    <a
-        href="index9.html"
-        style="
-            display: block;
-            width: 100%;
-            padding: 18px;
-            background: white;
-            color: #1976d2;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        "
-    >
-
-        📚 Jurnal Khusus Admin
-
-    </a>
-
-</div>
-
-<!-- PENYIMPANAN ADMIN --> <button type="button" onclick="window.location.href='index10.html'" style=" display: block; width: 100%; padding: 22px; margin-top: 18px; background: white; color: #1976d2; border: none; border-radius: 15px; font-size: 21px; font-weight: bold; text-align: center; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); cursor: pointer; " > <span style=" display: block; font-size: 35px; margin-bottom: 8px; "> 💾 </span> Penyimpanan Admin <span style=" display: block; color: #777; font-size: 14px; font-weight: normal; margin-top: 6px; "> Lihat jurnal khusus admin </span> </button>
-
-<button
-    type="button"
-    onclick="window.location.href='index11.html'"
-    style="
-        display: block;
-        width: 100%;
-        padding: 18px 22px;
-        margin-top: 15px;
-        background: white;
-        color: #1976d2;
-        border: none;
-        border-radius: 12px;
-        font-size: 19px;
-        font-weight: bold;
-        text-align: center;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-    "
->
-    🔐 Secret Vault
-</button>
-
 </body>
-
 </html>

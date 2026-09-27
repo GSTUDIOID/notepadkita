@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data User - NotepadKita</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #222;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .header {
+            background: #1976d2;
+            color: white;
+            padding: 22px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .header p {
+            margin: 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .08);
+            text-align: center;
+        }
+
+        .number {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1976d2;
+            word-break: break-all;
+        }
+
+        .label {
+            margin-top: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        button,
+        .back,
+        .btn-export {
+            border: none;
+            padding: 12px 16px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button {
+            background: #1976d2;
+            color: white;
+        }
+
+        .btn-export {
+            background: #16a34a;
+            color: white;
+        }
+
+        .back {
+            background: white;
+            color: #1976d2;
+        }
+
+        button:hover,
+        .btn-export:hover,
+        .back:hover {
+            opacity: .85;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #1976d2;
+        }
+
+        .filter-select {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .message {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .users {
+            display: grid;
+            gap: 15px;
+        }
+
+        .user-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .08);
+            position: relative;
+        }
+
+        .user-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .online {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .offline {
+            color: #777;
+            font-weight: bold;
+        }
+
+        .banned-badge {
+            background: #ef4444;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .info {
+            margin-top: 7px;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .ip-badge {
+            background: #e2e8f0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #0f172a;
+            display: inline-block;
+        }
+
+        .location-tag {
+            color: #0284c7;
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .card-actions {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        .token {
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>👥 Data Semua User</h1>
+            <p>Pemeriksaan dan manajemen pengguna NotepadKita</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div id="totalCount" class="number">0</div>
+                <div class="label">Total Akun</div>
+            </div>
+
+            <div class="stat">
+                <div id="onlineCount" class="number">0</div>
+                <div class="label">Sedang Online</div>
+            </div>
+
+            <div class="stat">
+                <div id="myIpAddress" class="number">Mendeteksi...</div>
+                <div class="label">IP Publik Anda</div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button onclick="loadUsers()">🔄 Refresh Data</button>
+            <button onclick="exportToCSV()" class="btn-export">📥 Export CSV</button>
+            <a href="index14.html" class="back">🔎 Pemeriksaan User</a>
+            <a href="index7.html" class="back">← Kembali Admin</a>
+        </div>
+
+        <div class="filter-container">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="🔍 Cari ID, Token, atau IP User..." 
+                oninput="applyFilter()"
+            >
+            <select id="statusFilter" class="filter-select" onchange="applyFilter()">
+                <option value="all">Semua Status</option>
+                <option value="online">Online Sahaja</option>
+                <option value="offline">Offline Sahaja</option>
+            </select>
+        </div>
+
+        <div id="message" class="message">Memuat data user...</div>
+
+        <div id="users" class="users"></div>
+
+    </div>
+
+    <script>
+        const adminToken = localStorage.getItem("notepadkita_admin_token");
+        let detectedPublicIp = null;
+        let allUsersData = [];
+        let onlineTokensSet = new Set();
+        let bannedUsersSet = new Set(JSON.parse(localStorage.getItem("notepadkita_banned_users") || "[]"));
+
+        async function getPublicIP() {
+            if (detectedPublicIp) return detectedPublicIp;
+            try {
+                const res = await fetch("https://api.ipify.org?format=json");
+                const data = await res.json();
+                detectedPublicIp = data.ip;
+                document.getElementById("myIpAddress").textContent = data.ip;
+                return data.ip;
+            } catch (err) {
+                document.getElementById("myIpAddress").textContent = "Tidak Terjangkau";
+                return "127.0.0.1";
+            }
+        }
+
+        async function fetchLocation(ip, elementId) {
+            if (!ip || ip === "127.0.0.1" || ip === "Tidak terdeteksi") return;
+            try {
+                const res = await fetch(`https://ipapi.co/${ip}/json/`);
+                const data = await res.json();
+                if (data.city && data.country_name) {
+                    const el = document.getElementById(elementId);
+                    if (el) el.textContent = `📍 ${data.city}, ${data.country_name}`;
+                }
+            } catch (e) {}
+        }
+
+        async function checkAdmin() {
+            if (!adminToken) {
+                window.location.href = "index6.html";
+                return false;
+            }
+            try {
+                const response = await fetch("/api/admin/check", {
+                    headers: { "X-Admin-Token": adminToken }
+                });
+                if (!response.ok) {
+                    localStorage.removeItem("notepadkita_admin_token");
+                    window.location.href = "index6.html";
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                document.getElementById("message").textContent = "Server tidak dapat dihubungi.";
+                return false;
+            }
+        }
+
+        async function loadUsers() {
+            const message = document.getElementById("message");
+            message.className = "message";
+            message.textContent = "Memuat data user...";
+
+            const currentIp = await getPublicIP();
+            const valid = await checkAdmin();
+            if (!valid) return;
+
+            try {
+                const response = await fetch("/api/admin/users", {
+                    headers: { "X-Admin-Token": adminToken }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem("notepadkita_admin_token");
+                    window.location.href = "index6.html";
+                    return;
+                }
+
+                const data = await response.json();
+                if (!data.success) {
+                    message.className = "message error";
+                    message.textContent = data.message || "Gagal mengambil data user.";
+                    return;
+                }
+
+                allUsersData = data.users || [];
+                document.getElementById("totalCount").textContent = allUsersData.length;
+
+                try {
+                    const onlineResponse = await fetch("/api/admin/online-users", {
+                        headers: { "X-Admin-Token": adminToken }
+                    });
+                    const onlineData = await onlineResponse.json();
+                    document.getElementById("onlineCount").textContent = onlineData.onlineCount || 0;
+                    onlineTokensSet = new Set((onlineData.users || []).map(u => u.user_token));
+                } catch (e) {
+                    console.warn("Gagal cek user online:", e);
+                }
+
+                message.textContent = "Data user berhasil dimuat.";
+                applyFilter();
+
+            } catch (error) {
+                console.error(error);
+                message.className = "message error";
+                message.textContent = "❌ Gagal mengambil data user.";
+            }
+        }
+
+        function applyFilter() {
+            const usersContainer = document.getElementById("users");
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const status = document.getElementById("statusFilter").value;
+
+            const filtered = allUsersData.filter(user => {
+                const isOnline = onlineTokensSet.has(user.user_token);
+                const displayIp = user.ip_address || user.ip || user.ipAddress || detectedPublicIp || "";
+                
+                const matchesSearch = 
+                    String(user.id).toLowerCase().includes(query) ||
+                    String(user.user_token).toLowerCase().includes(query) ||
+                    displayIp.toLowerCase().includes(query);
+
+                const matchesStatus = 
+                    status === "all" ||
+                    (status === "online" && isOnline) ||
+                    (status === "offline" && !isOnline);
+
+                return matchesSearch && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                usersContainer.innerHTML = `<div class="message">Tidak ada data user yang sesuai.</div>`;
+                return;
+            }
+
+            usersContainer.innerHTML = filtered.map(user => {
+                const isOnline = onlineTokensSet.has(user.user_token);
+                const isBanned = bannedUsersSet.has(user.user_token);
+                const displayIp = user.ip_address || user.ip || user.ipAddress || detectedPublicIp || "127.0.0.1";
+                const locElId = `loc-${user.id}`;
+
+                fetchLocation(displayIp, locElId);
+
+                return `
+                    <div class="user-card">
+                        <div class="user-title">
+                            👤 User #${user.id}
+                            ${isBanned ? `<span class="banned-badge">DIBLOKIR</span>` : ""}
+                        </div>
+
+                        <div class="${isOnline ? "online" : "offline"}">
+                            ${isOnline ? "● ONLINE" : "● OFFLINE"}
+                        </div>
+
+                        <div class="info"><strong>ID:</strong> ${user.id}</div>
+
+                        <div class="info">
+                            <strong>IP Address:</strong> 
+                            <span class="ip-badge">${displayIp}</span>
+                            <span id="${locElId}" class="location-tag"></span>
+                        </div>
+
+                        <div class="info"><strong>Dibuat:</strong> ${user.created_at || "-"}</div>
+                        <div class="info"><strong>Terakhir aktif:</strong> ${user.last_seen || "-"}</div>
+                        <div class="info token"><strong>User Token:</strong> ${user.user_token}</div>
+
+                        <div class="card-actions">
+                            <button class="btn-warning" onclick="toggleBan('${user.user_token}')">
+                                ${isBanned ? "🔓 Buka Blokir Token" : "🚫 Blokir Token User"}
+                            </button>
+                            <button class="btn-danger" onclick="banIp('${displayIp}')">
+                                🚫 Blokir IP Ini
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function toggleBan(userToken) {
+            if (bannedUsersSet.has(userToken)) {
+                bannedUsersSet.delete(userToken);
+                alert("Akses token berhasil dibuka!");
+            } else {
+                if (confirm("Yakin ingin memblokir token user ini?")) {
+                    bannedUsersSet.add(userToken);
+                    alert("Token user berhasil diblokir!");
+                }
+            }
+            localStorage.setItem("notepadkita_banned_users", JSON.stringify([...bannedUsersSet]));
+            
+            try {
+                await fetch("/api/admin/ban-user", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-Admin-Token": adminToken },
+                    body: JSON.stringify({ token: userToken, banned: bannedUsersSet.has(userToken) })
+                });
+            } catch (e) {}
+
+            applyFilter();
+        }
+
+        async function banIp(ip) {
+            if (confirm(`Yakin ingin memblokir seluruh akses dari IP ${ip}?`)) {
+                try {
+                    await fetch("/api/admin/ban-ip", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "X-Admin-Token": adminToken },
+                        body: JSON.stringify({ ip: ip })
+                    });
+                    alert(`IP ${ip} berhasil dimasukkan ke daftar blokir server!`);
+                } catch (e) {
+                    alert(`IP ${ip} tersimpan di daftar blokir lokal.`);
+                }
+            }
+        }
+
+        function exportToCSV() {
+            if (allUsersData.length === 0) {
+                alert("Tidak ada data untuk diexport!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,ID,IP_Address,Status,Dibuat,Terakhir_Aktif,Token\n";
+
+            allUsersData.forEach(u => {
+                const isOnline = onlineTokensSet.has(u.user_token) ? "Online" : "Offline";
+                const ip = u.ip_address || u.ip || detectedPublicIp || "-";
+                csvContent += `"${u.id}","${ip}","${isOnline}","${u.created_at || "-"}","${u.last_seen || "-"}","${u.user_token}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Data_User_NotepadKita_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        loadUsers();
+    </script>
+</body>
+
+</html>

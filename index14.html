@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pemeriksaan User - NotepadKita</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #0d6efd;
+            color: white;
+            padding: 25px 15px 40px;
+            overflow-y: auto;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #0d6efd;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            flex: 1;
+            min-width: 180px;
+            padding: 13px 18px;
+            border-radius: 10px;
+            background: white;
+            color: #0d6efd;
+            text-decoration: none;
+            text-align: center;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .user-card {
+            background: white;
+            color: #222;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .user-title {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .online {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .offline {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 10px 15px;
+            font-size: 14px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .value {
+            word-break: break-all;
+        }
+
+        .token {
+            background: #f1f5f9;
+            padding: 9px;
+            border-radius: 7px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .notes {
+            margin-top: 15px;
+        }
+
+        .note {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .note-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .note-type {
+            display: inline-block;
+            font-size: 11px;
+            padding: 4px 7px;
+            border-radius: 5px;
+            background: #e2e8f0;
+            margin-bottom: 7px;
+        }
+
+        .note-content {
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #444;
+            font-size: 13px;
+        }
+
+        .empty {
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .back {
+            display: block;
+            margin-top: 25px;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 650px) {
+
+            .info {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .label {
+                margin-top: 8px;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>🔎 Pemeriksaan User</h1>
+
+        <p>
+            Cari dan periksa informasi pengguna NotepadKita
+        </p>
+
+    </div>
+
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Cari berdasarkan nomor user, IP, atau token..."
+            oninput="filterUsers()"
+        >
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="button"
+            onclick="loadUsers()"
+        >
+            🔄 Refresh
+        </button>
+
+        <a
+            href="index13.html"
+            class="button"
+        >
+            ← Semua Akun
+        </a>
+
+    </div>
+
+
+    <div id="userList" class="user-list">
+
+        <div class="loading">
+            Memuat data user...
+        </div>
+
+    </div>
+
+
+    <a
+        href="index7.html"
+        class="back"
+    >
+        ← Kembali ke Admin Panel
+    </a>
+
+</div>
+
+
+<script>
+
+let allUsers = [];
+
+
+function formatTanggal(tanggal) {
+
+    if (!tanggal) {
+        return "-";
+    }
+
+    const date =
+        new Date(
+            tanggal.replace(" ", "T") + "Z"
+        );
+
+    if (isNaN(date.getTime())) {
+        return tanggal;
+    }
+
+    return date.toLocaleString("id-ID", {
+        dateStyle: "medium",
+        timeStyle: "medium"
+    });
+}
+
+
+function isOnline(lastSeen) {
+
+    if (!lastSeen) {
+        return false;
+    }
+
+    const last =
+        new Date(
+            lastSeen.replace(" ", "T") + "Z"
+        );
+
+    const now =
+        new Date();
+
+    return (
+        now.getTime() -
+        last.getTime()
+    ) <= 5 * 60 * 1000;
+}
+
+
+async function loadUsers() {
+
+    const list =
+        document.getElementById("userList");
+
+    list.innerHTML = `
+        <div class="loading">
+            Memuat data user...
+        </div>
+    `;
+
+    try {
+
+        const response =
+            await fetch("/api/admin/users");
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+            throw new Error(
+                data.message ||
+                "Gagal mengambil data."
+            );
+        }
+
+        allUsers =
+            data.users || [];
+
+        renderUsers(allUsers);
+
+    } catch (error) {
+
+        console.error(error);
+
+        list.innerHTML = `
+            <div class="empty">
+                ❌ Gagal mengambil data user.<br><br>
+                ${error.message}
+            </div>
+        `;
+    }
+}
+
+
+function filterUsers() {
+
+    const keyword =
+        document
+            .getElementById("searchInput")
+            .value
+            .toLowerCase()
+            .trim();
+
+    if (!keyword) {
+        renderUsers(allUsers);
+        return;
+    }
+
+    const filtered =
+        allUsers.filter(user => {
+
+            const id =
+                String(user.id || "")
+                    .toLowerCase();
+
+            const ip =
+                String(user.ip_address || "")
+                    .toLowerCase();
+
+            const token =
+                String(user.user_token || "")
+                    .toLowerCase();
+
+            return (
+                id.includes(keyword) ||
+                ip.includes(keyword) ||
+                token.includes(keyword)
+            );
+        });
+
+    renderUsers(filtered);
+}
+
+
+function renderUsers(users) {
+
+    const list =
+        document.getElementById("userList");
+
+
+    if (users.length === 0) {
+
+        list.innerHTML = `
+            <div class="empty">
+                Tidak ada user yang cocok.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        users.map(user => {
+
+            const online =
+                isOnline(user.last_seen);
+
+            return `
+                <div class="user-card">
+
+                    <div class="user-header">
+
+                        <div class="user-title">
+                            👤 User #${user.id}
+                        </div>
+
+                        <div class="status ${
+                            online
+                                ? "online"
+                                : "offline"
+                        }">
+
+                            ${
+                                online
+                                    ? "● ONLINE"
+                                    : "● OFFLINE"
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="section">
+
+                        <div class="section-title">
+                            📋 Informasi Akun
+                        </div>
+
+                        <div class="info">
+
+                            <div class="label">
+                                Nomor User
+                            </div>
+
+                            <div class="value">
+                                #${user.id}
+                            </div>
+
+
+                            <div class="label">
+                                IP / Asal
+                            </div>
+
+                            <div class="value">
+                                ${
+                                    user.ip_address ||
+                                    "Tidak diketahui"
+                                }
+                            </div>
+
+
+                            <div class="label">
+                                Akun Dibuat
+                            </div>
+
+                            <div class="value">
+                                ${formatTanggal(
+                                    user.created_at
+                                )}
+                            </div>
+
+
+                            <div class="label">
+                                Terakhir Aktif
+                            </div>
+
+                            <div class="value">
+                                ${formatTanggal(
+                                    user.last_seen
+                                )}
+                            </div>
+
+
+                            <div class="label">
+                                Status
+                            </div>
+
+                            <div class="value">
+                                ${
+                                    online
+                                        ? "Sedang online"
+                                        : "Tidak aktif"
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="section">
+
+                        <div class="section-title">
+                            🔑 User Token
+                        </div>
+
+                        <div class="token">
+                            ${
+                                user.user_token ||
+                                "-"
+                            }
+                        </div>
+
+                    </div>
+
+
+                    <div class="section notes">
+
+                        <div class="section-title">
+                            📝 Catatan & Jurnal
+                        </div>
+
+                        <div
+                            id="notes-${user.id}"
+                            class="note-container"
+                        >
+                            Memuat data...
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+
+
+    users.forEach(user => {
+
+        loadUserNotes(
+            user,
+            document.getElementById(
+                `notes-${user.id}`
+            )
+        );
+
+    });
+}
+
+
+async function loadUserNotes(user, container) {
+
+    if (!container) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/notes/${user.user_token}`
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            !data.success ||
+            !data.notes ||
+            data.notes.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="note">
+                    User ini belum memiliki
+                    catatan atau jurnal.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            data.notes.map(note => {
+
+                const type =
+                    note.type === "jurnal"
+                        ? "JURNAL"
+                        : "CATATAN";
+
+                return `
+                    <div class="note">
+
+                        <div class="note-type">
+                            ${type}
+                        </div>
+
+                        <div class="note-title">
+                            ${
+                                note.title ||
+                                "Tanpa Judul"
+                            }
+                        </div>
+
+                        <div class="note-content">
+                            ${
+                                escapeHTML(
+                                    note.content || ""
+                                )
+                            }
+                        </div>
+
+                    </div>
+                `;
+
+            }).join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Gagal mengambil notes:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="note">
+                Gagal mengambil catatan user.
+            </div>
+        `;
+    }
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+loadUsers();
+
+</script>
+
+</body>
+</html>
