@@ -272,7 +272,7 @@ app.post("/api/admin/logout", requireAdmin, (req, res) => {
 // ===============================
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index3.html"));
+    res.sendFile(path.join(__dirname, "index1.html"));
 });
 
 app.get("/:file", (req, res, next) => {
